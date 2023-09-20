@@ -2,31 +2,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Epic extends Task {
-    public HashMap<Integer, SubTask> subTaskForEpic = new HashMap<>();
-    ArrayList<String> subTaskStatus = new ArrayList<>();
-    String status;
+    private HashMap<Integer, SubTask> subTaskForEpic = new HashMap<>();
+
+    protected ArrayList<String> subTaskStatuses = new ArrayList<>();
+    protected String status;
 
     public Epic(String name, String description) {
         super.name = name;
         super.description = description;
-        this.status = getStatus(subTaskStatus);
     }
 
-    public String getStatus(ArrayList<String> subTaskStatus) {
-        if (subTaskStatus.isEmpty()) {
-            return "NEW";
-        }
-        if ((subTaskStatus.contains("NEW"))
-                && (!subTaskStatus.contains("IN_PROGRESS"))
-                && (!subTaskStatus.contains("DONE"))) {
-            return "NEW";
-        } else if ((subTaskStatus.contains("DONE"))
-                && (!subTaskStatus.contains("NEW"))
-                && (!subTaskStatus.contains("IN_PROGRESS"))) {
-            return "DONE";
-        } else {
-            return "IN_PROGRESS";
-        }
+    public HashMap<Integer, SubTask> getSubTaskForEpic() {
+        return subTaskForEpic;
     }
 
     @Override
@@ -37,7 +24,9 @@ public class Epic extends Task {
         } else {
             subTask = subTaskForEpic.toString();
         }
-        return "Epic{" + "name='" + name + '\'' +
+        return "Epic{" +
+                " uniqueId='" + id + '\'' +
+                " name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
                 ",  subtasks=' " + subTaskForEpic + '\'' +

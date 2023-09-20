@@ -7,14 +7,14 @@ public class Main {
         taskManager.createTask(new Task("Поездка", "собрать вещи в дорогу", 1));
         taskManager.createTask(new Task("Покупка столика", "Выбрать столик в мебельном", 2));
         System.out.println("Проверка списка Task");
-        taskManager.getTaskList(taskManager.task);
+        taskManager.getTaskList(taskManager.taskMap);
 
         taskManager.createEpic(
                 new Epic("Переселение", "Собираем вещи, перевозим"));
         taskManager.createEpic(
                 new Epic("Учеба", "Разбираем по винтикам темы"));
         System.out.println("Проверка списка Epic");
-        taskManager.getEpicList(taskManager.epic);
+        taskManager.getEpicList(taskManager.epicMap);
 
         taskManager.createSubTask(
                 new SubTask("Перевозка вещей", "Собираем вещи, перевозим", 3, 2 ));
@@ -25,9 +25,9 @@ public class Main {
         taskManager.createSubTask(
                 new SubTask("Подготовка к учебе", "раскладываем тетрадки", 1, 3 ));
         System.out.println("Проверка списка subTask");
-        taskManager.getSubTaskList(taskManager.subTask);
+        taskManager.getSubTaskList(taskManager.subTaskMap);
         System.out.println("Проверка списка Epic после внесения subTask");
-        taskManager.getEpicList(taskManager.epic);
+        taskManager.getEpicList(taskManager.epicMap);
         System.out.println("Проверка списка вызова по ID");
         System.out.println(taskManager.getEpicById(3));
         System.out.println(taskManager.getSubTaskById(5));
@@ -42,13 +42,13 @@ public class Main {
         System.out.println("Проверка удаления Epic по Id, далее вызов списка SubTask," +
                 " все свзяанные с Epic SubTask должны удаляться");
         taskManager.clearEpicById(2);
-        taskManager.getSubTaskList(taskManager.subTask);
+        taskManager.getSubTaskList(taskManager.subTaskMap);
         taskManager.updateSubTask(7,
                 new SubTask("Подготовка к учебе"," достали ручки ",3,3));
-        taskManager.getSubTaskList(taskManager.subTask);
-        taskManager.getEpicList(taskManager.epic);
+        taskManager.getSubTaskList(taskManager.subTaskMap);
+        taskManager.getEpicList(taskManager.epicMap);
         System.out.println("Проверка замены Epic по Id  (оставляем SubTask)");
         taskManager.updateEpic(3, new Epic("Другой урок","Пришли на другой урок"));
-        taskManager.getEpicList(taskManager.epic);
+        taskManager.getEpicList(taskManager.epicMap);
     }
 }

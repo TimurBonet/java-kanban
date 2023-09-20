@@ -3,32 +3,57 @@ import java.util.HashMap;
 
 public class TaskManager {
     int uniqueId = 0;
-    public HashMap<Integer, Task> task = new HashMap<>();
-    public HashMap<Integer, SubTask> subTask = new HashMap<>();
-    public HashMap<Integer, Epic> epic = new HashMap<>();
+    public HashMap<Integer, Task> taskMap = new HashMap<>();
+    public HashMap<Integer, SubTask> subTaskMap = new HashMap<>();
+    public HashMap<Integer, Epic> epicMap = new HashMap<>();
 
     public void createTask(Task newTask) {                              // Создать новую обычную задачу
-        task.put(uniqueId, newTask);
+        newTask.id = uniqueId;
+        newTask.status = setStatus(newTask.statusId);
+        taskMap.put(uniqueId, newTask);
         uniqueId++;
     }
 
+    public String setStatus(int statusId) {
+        String result = "";
+        switch (statusId) {
+            case 1 :
+                result = Status.NEW.getTitle();
+                break;
+            case 2 :
+                result = Status.IN_PROGRESS.getTitle();
+                break;
+            case 3 :
+                result = Status.DONE.getTitle();
+                break;
+            default:
+                System.out.println("Ошибка. Выберите одно из трёх сотояний: " +
+                        "1 - \"NEW\", 2 - \"IN_PROGRESS\", 3- \"DONE\"");
+        }
+        return result;
+    }
+
     public void updateTask(int uniqueId, Task newTask) {
-        if (!task.containsKey(uniqueId)) {
+        if (!taskMap.containsKey(uniqueId)) {
             System.out.println("Неверный Id");
             return;
         }
-        task.put(uniqueId, newTask);
+        newTask.status = setStatus(newTask.statusId);
+        newTask.id = uniqueId;
+        taskMap.put(uniqueId, newTask);
     }
 
     public void createSubTask(SubTask newSubTask) {                     // Создать новую субзадачу
-        int idOfEpic = newSubTask.idOfEpic;                             // извлекаем имя эпика для которого она создана
+        int epicId  = newSubTask.epicId ;                             // извлекаем имя эпика для которого она создана
 
-        if (!epic.containsKey(idOfEpic)) {
-            System.out.println(idOfEpic + " - Эпик-задача с таким Id отуствует");
+        if (!epicMap.containsKey(epicId )) {
+            System.out.println(epicId  + " - Эпик-задача с таким Id отуствует");
         }
-        for (int key : epic.keySet()) {                                  // проходим по мапе с эпиками
-            if (idOfEpic == key) {                                      //если ID из субзадачи эквивалентно  ID эпика
-                subTask.put(uniqueId, newSubTask);                      // добавляем субзадачу в мапу субзадач
+        for (int key : epicMap.keySet()) {                                  // проходим по мапе с эпиками
+            if (epicId  == key) {                                      //если ID из субзадачи эквивалентно  ID эпика
+                newSubTask.status = setStatus(newSubTask.statusId);
+                newSubTask.id = uniqueId;
+                subTaskMap.put(uniqueId, newSubTask);                      // добавляем субзадачу в мапу субзадач
                 uniqueId++;                                             // меняем айди
                 return;
             }
@@ -36,100 +61,138 @@ public class TaskManager {
     }
 
     public void updateSubTask(int uniqueId, SubTask newSubTask) {
-        if (!subTask.containsKey(uniqueId)) {
+        if (!subTaskMap.containsKey(uniqueId)) {
             System.out.println("Неверный Id");
             return;
         }
-        subTask.put(uniqueId, newSubTask);
-        for (Integer key : subTask.keySet()) {
-            if (newSubTask.idOfEpic == subTask.get(key).idOfEpic) {
-                epic.get(newSubTask.idOfEpic).subTaskStatus.clear();
-                epic.get(newSubTask.idOfEpic).subTaskStatus.add(subTask.get(key).status);
-                epic.get(newSubTask.idOfEpic).subTaskForEpic.put(key, subTask.get(key));
+        newSubTask.status = setStatus(newSubTask.statusId);
+        newSubTask.id = uniqueId;
+        subTaskMap.put(uniqueId, newSubTask);
+        for (Integer key : subTaskMap.keySet()) {
+            if (newSubTask.epicId  == subTaskMap.get(key).epicId ) {
+                epicMap.get(newSubTask.epicId ).subTaskStatuses.clear();
+                epicMap.get(newSubTask.epicId ).subTaskStatuses.add(subTaskMap.get(key).status);
+                epicMap.get(newSubTask.epicId ).getSubTaskForEpic().put(key, subTaskMap.get(key));
             }
         }
     }
 
+    public void updateSubTask(/*int uniqueId, */ SubTask newSubTask) {
+        if (!subTaskMap.containsKey(uniqueId)) {
+        System.out.println("Неверный Id");
+        return;
+    }
+    newSubTask.status = setStatus(newSubTask.statusId);
+    newSubTask.id = uniqueId;
+        subTaskMap.put(uniqueId, newSubTask);
+        for (Integer key : subTaskMap.keySet()) {
+        if (newSubTask.epicId  == subTaskMap.get(key).epicId ) {
+            epicMap.get(newSubTask.epicId ).subTaskStatuses.clear();
+            epicMap.get(newSubTask.epicId ).subTaskStatuses.add(subTaskMap.get(key).status);
+            epicMap.get(newSubTask.epicId ).getSubTaskForEpic().put(key, subTaskMap.get(key));
+        }
+    }
+}
+
     public void createEpic(Epic newEpic) {                              // Создать новый эпик-задачу
-        epic.put(uniqueId, newEpic);
+        newEpic.id = uniqueId;
+        epicMap.put(uniqueId, newEpic);
         uniqueId++;
     }
 
     public void updateEpic(int uniqueId, Epic newEpic) {
-        for (Integer key : subTask.keySet()) {
-            if (uniqueId == subTask.get(key).idOfEpic) {
-                newEpic.subTaskStatus.add(subTask.get(key).status);
-                newEpic.subTaskForEpic.put(key, subTask.get(key));
+        for (Integer key : subTaskMap.keySet()) {
+            if (uniqueId == subTaskMap.get(key).epicId ) {
+                newEpic.subTaskStatuses.add(subTaskMap.get(key).status);
+                newEpic.getSubTaskForEpic().put(key, subTaskMap.get(key));
             }
         }
-        newEpic.status = newEpic.getStatus(newEpic.subTaskStatus);
-        epic.put(uniqueId, newEpic);
+        newEpic.id = uniqueId;
+        newEpic.status = getStatus(newEpic.subTaskStatuses);
+        epicMap.put(uniqueId, newEpic);
+    }
+
+    public String getStatus(ArrayList<String> subTaskStatuses) {
+        if (subTaskStatuses.isEmpty()) {
+            return "NEW";
+        }
+        if ((subTaskStatuses.contains("NEW"))
+                && (!subTaskStatuses.contains("IN_PROGRESS"))
+                && (!subTaskStatuses.contains("DONE"))) {
+            return "NEW";
+        } else if ((subTaskStatuses.contains("DONE"))
+                && (!subTaskStatuses.contains("NEW"))
+                && (!subTaskStatuses.contains("IN_PROGRESS"))) {
+            return "DONE";
+        } else {
+            return "IN_PROGRESS";
+        }
     }
 
 // Блок получения задачи по ID
 
     public String getEpicById(int uniqueId) {                           //Получить эпик-задачу по ID
-        if (!epic.containsKey(uniqueId)) {
+        if (!epicMap.containsKey(uniqueId)) {
             return "Отсутствует Эпик - задача с таким ID.";
         }
-        for (Integer key : subTask.keySet()) {
-            if (uniqueId == subTask.get(key).idOfEpic) {
-                epic.get(uniqueId).subTaskStatus.add(subTask.get(key).status);
-                epic.get(uniqueId).subTaskForEpic.put(key, subTask.get(key));
+        for (Integer key : subTaskMap.keySet()) {
+            if (uniqueId == subTaskMap.get(key).epicId ) {
+                epicMap.get(uniqueId).subTaskStatuses.add(subTaskMap.get(key).status);
+                epicMap.get(uniqueId).getSubTaskForEpic().put(key, subTaskMap.get(key));
             }
         }
-        Epic newEpic = epic.get(uniqueId);
-        newEpic.status = newEpic.getStatus(newEpic.subTaskStatus);
-        epic.put(uniqueId, newEpic);
-        return "uniqueId='" + uniqueId + '\'' + " : " + epic.get(uniqueId).toString();
+        Epic newEpic = epicMap.get(uniqueId);
+        newEpic.status = getStatus(newEpic.subTaskStatuses);
+        epicMap.put(uniqueId, newEpic);
+        return epicMap.get(uniqueId).toString();
     }
 
     public String getTaskById(int uniqueId) {                               // Получить обычную задачу по ID
         String result = null;
-        if (!task.containsKey(uniqueId)) {
+        if (!taskMap.containsKey(uniqueId)) {
             return "Отсутствует стандартная задача с таким ID.";
         }
-        for (Integer key : task.keySet()) {
+        for (Integer key : taskMap.keySet()) {
             if (uniqueId == key) {
-                result = task.get(uniqueId).toString();
+                result = taskMap.get(uniqueId).toString();
             }
         }
-        return "uniqueId='" + uniqueId + '\'' + " : " + result;
+        return /*"uniqueId='" + uniqueId + '\'' + " : " + */result;
     }
 
     public String getSubTaskById(int uniqueId) {                            // Получить субзадачу по ID
         String result = null;
 
-        if (!subTask.containsKey(uniqueId)) {
+        if (!subTaskMap.containsKey(uniqueId)) {
             return "Отсутствует субзадача с таким ID.";
         }
-        for (Integer key : subTask.keySet()) {
+        for (Integer key : subTaskMap.keySet()) {
             if (uniqueId == key) {
-                result = subTask.get(uniqueId).toString();
+                result = subTaskMap.get(uniqueId).toString();
             }
         }
-        return "uniqueId='" + uniqueId + '\'' + " : " + result;
+        return result;
     }
 
 // Блок вызова списка задач
 
     public void getTaskList(HashMap<Integer, Task> task) {
         for (Integer key : task.keySet()) {
-            System.out.println("uniqueId='" + key + '\'' + " : " + task.get(key));
+            System.out.println(task.get(key));
         }
     }
 
     public void getSubTaskList(HashMap<Integer, SubTask> subTask) {
         for (Integer key : subTask.keySet()) {
-            System.out.println("uniqueId='" + key + '\'' + " : " + subTask.get(key));
+            System.out.println(subTask.get(key));
         }
     }
 
     public void getEpicList(HashMap<Integer, Epic> epic) {
         for (Integer key : epic.keySet()) {
-            for (Integer key2 : subTask.keySet()) {
-                if (subTask.get(key2).idOfEpic == key2) {
-                    epic.get(key).subTaskForEpic.put(key2, subTask.get(key2));
+            for (Integer key2 : subTaskMap.keySet()) {
+                if (subTaskMap.get(key2).epicId  == key2) {
+                    epic.get(key).getSubTaskForEpic().put(key2, subTaskMap.get(key2));
                 }
             }
         }
@@ -140,14 +203,14 @@ public class TaskManager {
 
     public String getSubTaskOfEpic(int uniqueId) {            //Или лучше getSubTaskListOfThisEpic ?
         HashMap<Integer, SubTask> subTaskList;
-        if (!epic.containsKey(uniqueId)) {
+        if (!epicMap.containsKey(uniqueId)) {
             return "Нет эпической задачи с таким Id.";
         }
-        Epic thisEpic = epic.get(uniqueId);
-        if (thisEpic.subTaskForEpic.isEmpty()) {
+        Epic thisEpic = epicMap.get(uniqueId);
+        if (thisEpic.getSubTaskForEpic().isEmpty()) {
             return "Текущая эпик-задача не имеет субзадач";
         } else {
-            subTaskList = thisEpic.subTaskForEpic;
+            subTaskList = thisEpic.getSubTaskForEpic();
         }
         return subTaskList.toString();
     }
@@ -163,46 +226,46 @@ public class TaskManager {
     }
 
     public void clearAllEpic(HashMap<Integer, Epic> epic) {
-        subTask.clear();                // предполагается что subTask могут существовать только как часть Epic задачи.
+        subTaskMap.clear();                // предполагается что subTask могут существовать только как часть Epic задачи.
         epic.clear();
     }
 
     // Блок удаления по ID
 
     public void clearTaskById(int uniqueId) {
-        if (!task.containsKey(uniqueId)) {
+        if (!taskMap.containsKey(uniqueId)) {
             System.out.println("Нет обычной задачи с таким Id.");
         } else {
-            task.remove(uniqueId);
+            taskMap.remove(uniqueId);
         }
     }
 
     public void clearSubTaskById(int uniqueId) {
-        if (!subTask.containsKey(uniqueId)) {
+        if (!subTaskMap.containsKey(uniqueId)) {
             System.out.println("Нет субзадачи с таким Id.");
         } else {
-            for (Integer key : epic.keySet()) {
-                epic.get(key).subTaskForEpic.remove(uniqueId);
-                epic.get(key).subTaskStatus.remove(subTask.get(uniqueId).status);
+            for (Integer key : epicMap.keySet()) {
+                epicMap.get(key).getSubTaskForEpic().remove(uniqueId);
+                epicMap.get(key).subTaskStatuses.remove(subTaskMap.get(uniqueId).status);
             }
-            subTask.remove(uniqueId);
+            subTaskMap.remove(uniqueId);
         }
     }
 
     public void clearEpicById(int uniqueId) {
-        if (!epic.containsKey(uniqueId)) {
+        if (!epicMap.containsKey(uniqueId)) {
             System.out.println("Нет эпик-задачи с таким Id.");
         } else {
             ArrayList<Integer> idOfSubTasks = new ArrayList<>();
-            for (Integer key : subTask.keySet()) {
-                if (subTask.get(key).idOfEpic == uniqueId) {
+            for (Integer key : subTaskMap.keySet()) {
+                if (subTaskMap.get(key).epicId  == uniqueId) {
                     idOfSubTasks.add(key);
                 }
             }
             for (int i : idOfSubTasks) {
-                subTask.remove(i);
+                subTaskMap.remove(i);
             }
-            epic.remove(uniqueId);
+            epicMap.remove(uniqueId);
         }
     }
 
