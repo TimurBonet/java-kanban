@@ -1,11 +1,10 @@
+package task;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class Epic extends Task {
-    //private HashMap<Integer, SubTask> subTaskForEpic = new HashMap<>();
     private List<SubTask> subTaskForEpic = new ArrayList<>();
-    private ArrayList<String> subTaskStatuses = new ArrayList<>();
     protected String status;
 
     public Epic(String name, String description) {
@@ -13,20 +12,17 @@ public class Epic extends Task {
         super.description = description;
     }
 
-    /*public HashMap<Integer, SubTask> getSubTaskForEpic() {
-        return subTaskForEpic;
-    }*/
     public List<SubTask> getSubTaskForEpic() {
         return subTaskForEpic;
     }
 
-
-    public ArrayList<String> getSubTaskStatuses() {
-        return subTaskStatuses;
-    }
-
     public String getStatus() {
         return status;
+    }
+
+    @Override
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     @Override
@@ -37,13 +33,13 @@ public class Epic extends Task {
         } else {
             subTask = subTaskForEpic.toString();
         }
-        return "Epic{" +
+        return "Tasks.Epic{" +
                 " uniqueId='" + id + '\'' +
                 " name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
                 ",  subtasks=' " + subTaskForEpic + '\'' +
-                '}';
+                '}' + "\n";
     }
 
 
