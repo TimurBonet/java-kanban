@@ -1,5 +1,7 @@
 package manager;
+
 import task.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +12,7 @@ public class TaskManager {
     public HashMap<Integer, SubTask> subTaskMap = new HashMap<>();
     public HashMap<Integer, Epic> epicMap = new HashMap<>();
 
-    public void assigningId(){
+    public void assigningId() {
         uniqueId++;
     }
 
@@ -25,13 +27,13 @@ public class TaskManager {
         String result = "";
         switch (status) {
             case "NEW":
-                result = Status.NEW.getTitle();
+                result = TaskStatus.NEW.getTitle();
                 break;
             case "IN_PROGRESS":
-                result = Status.IN_PROGRESS.getTitle();
+                result = TaskStatus.IN_PROGRESS.getTitle();
                 break;
             case "DONE":
-                result = Status.DONE.getTitle();
+                result = TaskStatus.DONE.getTitle();
                 break;
             default:
                 System.out.println("Ошибка. Выберите одно из трёх сотояний: " +
@@ -56,14 +58,10 @@ public class TaskManager {
             System.out.println(epicId + " - Эпик-задача с таким Id отуствует");
         }
         newSubTask.setId(uniqueId);
-        for (int key : epicMap.keySet()) {                                // проходим по мапе с эпиками
-            if (epicId == key) {                                          //если ID из субзадачи эквивалентно ID эпика
-                subTaskMap.put(uniqueId, newSubTask);                     // добавляем субзадачу в мапу субзадач
-                epicMap.get(epicId).getSubTaskForEpic().add(newSubTask);  // добавляем субзадачу в список субзадач эпика
-                assigningId();                                            // меняем айди
-                return;
-            }
-        }
+        subTaskMap.put(uniqueId, newSubTask);                     // добавляем субзадачу в мапу субзадач
+        epicMap.get(epicId).getSubTaskForEpic().add(newSubTask);  // добавляем субзадачу в список субзадач эпика
+        epicMap.get(epicId).setStatus(getStatus(epicMap.get(epicId).getSubTaskForEpic())); // обновление статуса
+        assigningId();                                            // меняем айди
     }
 
     public void updateSubTask(SubTask newSubTask) {                     // обновить субзадачу
@@ -72,14 +70,13 @@ public class TaskManager {
             System.out.println("Неверный Id");
             return;
         }
-        for (Integer key : subTaskMap.keySet()) {
-            if (newSubTask.getEpicId() == subTaskMap.get(key).getEpicId()) {
-                for(SubTask sub : epicMap.get(newSubTask.getEpicId()).getSubTaskForEpic()) {
-                    if(sub.getEpicId() == newSubTask.getEpicId()) {
-                        int index = epicMap.get(newSubTask.getEpicId()).getSubTaskForEpic().indexOf(sub);
-                        epicMap.get(newSubTask.getEpicId()).getSubTaskForEpic().set(index, newSubTask);
-                    }
-                }
+        subTaskMap.put(uniqueId, newSubTask);
+        int epicId = newSubTask.getEpicId();
+        for (SubTask sub : epicMap.get(epicId).getSubTaskForEpic()) { //Упростили вложение т.к. подаются только
+            if (sub.getId() == uniqueId) {                            // элементы subTaskMap
+                int index = epicMap.get(epicId).getSubTaskForEpic().indexOf(sub);
+                epicMap.get(epicId).getSubTaskForEpic().set(index, newSubTask);  // помещаю в сабтаскЛист эпика с epicId
+                epicMap.get(epicId).setStatus(getStatus(epicMap.get(epicId).getSubTaskForEpic())); // обновление статуса
             }
         }
     }
@@ -104,7 +101,7 @@ public class TaskManager {
 
     public String getStatus(List<SubTask> subTaskForEpic) {
         ArrayList<String> subTaskStatuses = new ArrayList<>();
-        for (SubTask s :subTaskForEpic) {
+        for (SubTask s : subTaskForEpic) {
             subTaskStatuses.add(s.getStatus());
         }
         if (subTaskStatuses.isEmpty()) {

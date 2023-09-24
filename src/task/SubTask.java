@@ -1,13 +1,13 @@
 package task;
 
 public class SubTask extends Task {
-    protected int epicId ;
+    protected int epicId;
 
-    public SubTask(String name, String description, String status, int epicId ) {
+    public SubTask(String name, String description, String status, int epicId) {
         super.name = name;
         super.description = description;
         super.status = status;
-        this.epicId  = epicId ;
+        this.epicId = epicId;
     }
 
     public int getEpicId() {
@@ -24,7 +24,7 @@ public class SubTask extends Task {
                 " uniqueId='" + id + '\'' +
                 " name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", epicId ='" + epicId  + '\'' +
+                ", epicId ='" + epicId + '\'' +
                 ", status='" + status + '\'' +
                 '}' + "\n";
     }

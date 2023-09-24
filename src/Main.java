@@ -8,7 +8,8 @@ public class Main {
     public static void main(String[] args) {
         TaskManager taskManager = new TaskManager();
         taskManager.createTask(new Task("Поездка", "собрать вещи в дорогу", "NEW"));
-        taskManager.createTask(new Task("Покупка столика", "Выбрать столик в мебельном", "IN_PROGRESS"));
+        taskManager.createTask(
+                new Task("Покупка столика", "Выбрать столик в мебельном", "IN_PROGRESS"));
         System.out.println("Проверка списка Tasks.Task");
         System.out.println(taskManager.getTaskList(taskManager.taskMap));
 
@@ -20,13 +21,13 @@ public class Main {
         System.out.println(taskManager.getEpicList(taskManager.epicMap));
 
         taskManager.createSubTask(
-                new SubTask("Перевозка вещей", "Собираем вещи, перевозим", "DONE", 2 ));
+                new SubTask("Перевозка вещей", "Собираем вещи, перевозим", "DONE", 2));
         taskManager.createSubTask(
-                new SubTask("Перевозим посуду", "Укладываем посуду", "DONE", 2 ));
+                new SubTask("Перевозим посуду", "Укладываем посуду", "DONE", 2));
         taskManager.createSubTask(
                 new SubTask("Перевозим мебель", "Разобрать и перевезти диван", "IN_PROGRESS", 2));
         taskManager.createSubTask(
-                new SubTask("Подготовка к учебе", "раскладываем тетрадки", "NEW", 3 ));
+                new SubTask("Подготовка к учебе", "раскладываем тетрадки", "NEW", 3));
         System.out.println("Проверка списка subTask");
         System.out.println(taskManager.getSubTaskList(taskManager.subTaskMap));
         System.out.println("Проверка списка Tasks.Epic после внесения subTask");
@@ -37,10 +38,7 @@ public class Main {
         System.out.println(taskManager.getTaskById(0));
         System.out.println("Проверка вызова списка Tasks.SubTask из Tasks.Epic");
         System.out.println(taskManager.getEpicSubtasks(3));
-     /*   System.out.println("-----");
-        System.out.println(taskManager.getSubTaskList(taskManager.subTaskMap));
-        System.out.println(taskManager.getEpicSubtasks(2));
-        System.out.println("-----");*/
+
         System.out.println("Проверка удаления Tasks.SubTask по Id");
         taskManager.clearSubTaskById(6);
         System.out.println("Просмотрим через вызов эпика Id=2, где была эта субзадача," +
@@ -49,13 +47,22 @@ public class Main {
         System.out.println("Проверка удаления Tasks.Epic по Id, далее вызов списка Tasks.SubTask," +
                 " все свзяанные с Tasks.Epic Tasks.SubTask должны удаляться");
         taskManager.clearEpicById(2);
-        taskManager.getSubTaskList(taskManager.subTaskMap);
-        taskManager.updateSubTask(
-                new SubTask("Подготовка к учебе"," достали ручки ","DONE",3));
-        taskManager.getSubTaskList(taskManager.subTaskMap);
-        taskManager.getEpicList(taskManager.epicMap);
+        System.out.println(taskManager.getSubTaskList(taskManager.subTaskMap));
+        System.out.println(taskManager.getEpicList(taskManager.epicMap));
+        System.out.println("--------------------------");
+        System.out.println("Проверка обновления Tasks.SubTask (смотрим статус Tasks.Epic)"); // на вход берём имеющуюся
+        SubTask updateSubtask = taskManager.subTaskMap.get(7);                               // вносим изменения
+        updateSubtask.setStatus("IN_PROGRESS");
+        updateSubtask.setDescription("тетради разложены");
+        taskManager.updateSubTask(updateSubtask);                                            // обновляем
+        System.out.println(taskManager.getEpicList(taskManager.epicMap));
+        System.out.println(taskManager.getSubTaskList(taskManager.subTaskMap));
+        System.out.println("************************");
         System.out.println("Проверка замены Tasks.Epic по Id  (оставляем Tasks.SubTask)");
-        taskManager.updateEpic( new Epic("Другой урок","Пришли на другой урок"));
-        taskManager.getEpicList(taskManager.epicMap);
+        Epic updateEpic = taskManager.epicMap.get(3);
+        updateEpic.setDescription("Пришли на другой урок");
+        updateEpic.setName("Другой урок");
+        taskManager.updateEpic(updateEpic);
+        System.out.println(taskManager.getEpicList(taskManager.epicMap));
     }
 }
