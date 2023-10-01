@@ -1,4 +1,6 @@
-import manager.TaskManager;
+import manager.HistoryManager;
+import manager.InMemoryHistoryManager;
+import manager.InMemoryTaskManager;
 import task.Epic;
 import task.SubTask;
 import task.Task;
@@ -6,7 +8,7 @@ import task.Task;
 public class Main {
 
     public static void main(String[] args) {
-        TaskManager taskManager = new TaskManager();
+        InMemoryTaskManager taskManager = new InMemoryTaskManager();
         taskManager.createTask(new Task("Поездка", "собрать вещи в дорогу", "NEW"));
         taskManager.createTask(
                 new Task("Покупка столика", "Выбрать столик в мебельном", "IN_PROGRESS"));
@@ -28,7 +30,7 @@ public class Main {
                 new SubTask("Перевозим мебель", "Разобрать и перевезти диван", "IN_PROGRESS", 2));
         taskManager.createSubTask(
                 new SubTask("Подготовка к учебе", "раскладываем тетрадки", "NEW", 3));
-        System.out.println("Проверка списка subTask");
+        /*System.out.println("Проверка списка subTask");
         System.out.println(taskManager.getSubTaskList(taskManager.subTaskMap));
         System.out.println("Проверка списка Tasks.Epic после внесения subTask");
         System.out.println(taskManager.getEpicList(taskManager.epicMap));
@@ -45,7 +47,7 @@ public class Main {
                 " статус должен смениться на 'DONE'");
         System.out.println(taskManager.getEpicById(2));
         System.out.println("Проверка удаления Tasks.Epic по Id, далее вызов списка Tasks.SubTask," +
-                " все свзяанные с Tasks.Epic Tasks.SubTask должны удаляться");
+                " все связанные с Tasks.Epic Tasks.SubTask должны удаляться");
         taskManager.clearEpicById(2);
         System.out.println(taskManager.getSubTaskList(taskManager.subTaskMap));
         System.out.println(taskManager.getEpicList(taskManager.epicMap));
@@ -63,6 +65,21 @@ public class Main {
         updateEpic.setDescription("Пришли на другой урок");
         updateEpic.setName("Другой урок");
         taskManager.updateEpic(updateEpic);
-        System.out.println(taskManager.getEpicList(taskManager.epicMap));
+        System.out.println(taskManager.getEpicList(taskManager.epicMap));*/
+        System.out.println("-----Вызываем 11 задач по id-------");
+        taskManager.getEpicById(2);
+        taskManager.getEpicById(3);
+        taskManager.getSubTaskById(7);
+        taskManager.getSubTaskById(5);
+        taskManager.getTaskById(1);
+        taskManager.getSubTaskById(7);
+        taskManager.getEpicById(3);
+        taskManager.getSubTaskById(5);
+        taskManager.getTaskById(0);
+        taskManager.getSubTaskById(7);
+        taskManager.getTaskById(1);
+        HistoryManager historyManager = new InMemoryHistoryManager();
+        System.out.println(historyManager.getHistory());
+        System.out.println("Получаем список из 10 задач 1-я вызванная удалена");
     }
 }
