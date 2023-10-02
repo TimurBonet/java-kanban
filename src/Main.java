@@ -13,14 +13,14 @@ public class Main {
         taskManager.createTask(
                 new Task("Покупка столика", "Выбрать столик в мебельном", "IN_PROGRESS"));
         System.out.println("Проверка списка Tasks.Task");
-        System.out.println(taskManager.getTaskList(taskManager.taskMap));
+        System.out.println(taskManager.getTaskList(taskManager.getTaskMap()));
 
         taskManager.createEpic(
                 new Epic("Переселение", "Собираем вещи, перевозим"));
         taskManager.createEpic(
                 new Epic("Учеба", "Разбираем по винтикам темы"));
         System.out.println("Проверка списка Tasks.Epic");
-        System.out.println(taskManager.getEpicList(taskManager.epicMap));
+        System.out.println(taskManager.getEpicList(taskManager.getEpicMap()));
 
         taskManager.createSubTask(
                 new SubTask("Перевозка вещей", "Собираем вещи, перевозим", "DONE", 2));
@@ -31,9 +31,9 @@ public class Main {
         taskManager.createSubTask(
                 new SubTask("Подготовка к учебе", "раскладываем тетрадки", "NEW", 3));
         /*System.out.println("Проверка списка subTask");
-        System.out.println(taskManager.getSubTaskList(taskManager.subTaskMap));
+        System.out.println(taskManager.getSubTaskList(taskManager.getSubTaskMap()));
         System.out.println("Проверка списка Tasks.Epic после внесения subTask");
-        System.out.println(taskManager.getEpicList(taskManager.epicMap));
+        System.out.println(taskManager.getEpicList(taskManager.getEpicMap()));
         System.out.println("Проверка списка вызова по ID");
         System.out.println(taskManager.getEpicById(3));
         System.out.println(taskManager.getSubTaskById(5));
@@ -49,23 +49,23 @@ public class Main {
         System.out.println("Проверка удаления Tasks.Epic по Id, далее вызов списка Tasks.SubTask," +
                 " все связанные с Tasks.Epic Tasks.SubTask должны удаляться");
         taskManager.clearEpicById(2);
-        System.out.println(taskManager.getSubTaskList(taskManager.subTaskMap));
-        System.out.println(taskManager.getEpicList(taskManager.epicMap));
+        System.out.println(taskManager.getSubTaskList(taskManager.getSubTaskMap()));
+        System.out.println(taskManager.getEpicList(taskManager.getEpicMap()));
         System.out.println("--------------------------");
         System.out.println("Проверка обновления Tasks.SubTask (смотрим статус Tasks.Epic)"); // на вход берём имеющуюся
-        SubTask updateSubtask = taskManager.subTaskMap.get(7);                               // вносим изменения
+        SubTask updateSubtask = taskManager.getSubTaskMap().get(7);                               // вносим изменения
         updateSubtask.setStatus("IN_PROGRESS");
         updateSubtask.setDescription("тетради разложены");
         taskManager.updateSubTask(updateSubtask);                                            // обновляем
-        System.out.println(taskManager.getEpicList(taskManager.epicMap));
-        System.out.println(taskManager.getSubTaskList(taskManager.subTaskMap));
+        System.out.println(taskManager.getEpicList(taskManager.getEpicMap()));
+        System.out.println(taskManager.getSubTaskList(taskManager.getSubTaskMap()));
         System.out.println("************************");
         System.out.println("Проверка замены Tasks.Epic по Id  (оставляем Tasks.SubTask)");
-        Epic updateEpic = taskManager.epicMap.get(3);
+        Epic updateEpic = taskManager.getEpicMap().get(3);
         updateEpic.setDescription("Пришли на другой урок");
         updateEpic.setName("Другой урок");
         taskManager.updateEpic(updateEpic);
-        System.out.println(taskManager.getEpicList(taskManager.epicMap));*/
+        System.out.println(taskManager.getEpicList(taskManager.getEpicMap()));*/
         System.out.println("-----Вызываем 11 задач по id-------");
         taskManager.getEpicById(2);
         taskManager.getEpicById(3);
@@ -78,8 +78,8 @@ public class Main {
         taskManager.getTaskById(0);
         taskManager.getSubTaskById(7);
         taskManager.getTaskById(1);
-        HistoryManager historyManager = new InMemoryHistoryManager();
-        System.out.println(historyManager.getHistory());
+        //HistoryManager historyManager = new InMemoryHistoryManager();
+        System.out.println(taskManager.getHistory());
         System.out.println("Получаем список из 10 задач 1-я вызванная удалена");
     }
 }

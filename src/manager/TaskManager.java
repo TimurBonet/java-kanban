@@ -9,12 +9,6 @@ import java.util.List;
 
 public interface TaskManager {
 
-    /*int uniqueId = 0;
-    public HashMap<Integer, Task> taskMap = new HashMap<>();
-    public HashMap<Integer, SubTask> subTaskMap = new HashMap<>();
-    public HashMap<Integer, Epic> epicMap = new HashMap<>();*/
-
-    void assigningId();
 
     void createTask(Task newTask);
 
@@ -66,4 +60,6 @@ public interface TaskManager {
 
     void clearEpicById(int uniqueId);
 
+    List<Task> getHistory(); // Немного не понял зачем дублировать сюда метод getHistory если он уж есть в HistoryManager
+                            // или это промежуточная стадия и в следующем задании будем убирать это в InMemoryHistoryManager?
 }

@@ -7,16 +7,32 @@ import java.util.HashMap;
 import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager{
-    int uniqueId = 0;
-    public HashMap<Integer, Task> taskMap = new HashMap<>();
-    public HashMap<Integer, SubTask> subTaskMap = new HashMap<>();
-    public HashMap<Integer, Epic> epicMap = new HashMap<>();
-    HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
+    private int uniqueId = 0;
+    private HashMap<Integer, Task> taskMap = new HashMap<>();
+    private HashMap<Integer, SubTask> subTaskMap = new HashMap<>();
+    private HashMap<Integer, Epic> epicMap = new HashMap<>();
+    private HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
 
-    @Override
-    public void assigningId() {
-        uniqueId++;
+    public HashMap<Integer, Task> getTaskMap() {
+        return taskMap;
     }
+
+    public HashMap<Integer, SubTask> getSubTaskMap() {
+        return subTaskMap;
+    }
+
+    public HashMap<Integer, Epic> getEpicMap() {
+        return epicMap;
+    }
+
+    public HistoryManager getInMemoryHistoryManager() {
+        return inMemoryHistoryManager;
+    }
+
+
+    void assigningId() {
+        uniqueId++;
+    }                           //теперь только в этом менеджере
 
     @Override
     public void createTask(Task newTask) {                              // Создать новую обычную задачу
@@ -140,8 +156,9 @@ public class InMemoryTaskManager implements TaskManager{
         Epic newEpic = epicMap.get(uniqueId);
         newEpic.setStatus(getStatus(newEpic.getSubTaskForEpic()));
         epicMap.put(uniqueId, newEpic);
-        inMemoryHistoryManager.add(epicMap.get(uniqueId));
-        return epicMap.get(uniqueId);
+        Epic localEpic = epicMap.get(uniqueId);                //Локальные переменные, как я понял, вот так должны быть.
+        inMemoryHistoryManager.add(localEpic);
+        return localEpic;
     }
 
     @Override
@@ -149,8 +166,9 @@ public class InMemoryTaskManager implements TaskManager{
         if (!taskMap.containsKey(uniqueId)) {
             System.out.println("Отсутствует стандартная задача с таким ID.");
         }
-        inMemoryHistoryManager.add(taskMap.get(uniqueId));
-        return taskMap.get(uniqueId);
+        Task loclTask = taskMap.get(uniqueId);                 //Локальный Task
+        inMemoryHistoryManager.add(loclTask);
+        return loclTask;
     }
 
     @Override
@@ -158,8 +176,9 @@ public class InMemoryTaskManager implements TaskManager{
         if (!subTaskMap.containsKey(uniqueId)) {
             System.out.println("Отсутствует субзадача с таким ID.");
         }
-        inMemoryHistoryManager.add(subTaskMap.get(uniqueId));
-        return subTaskMap.get(uniqueId);
+        SubTask localSubTask = subTaskMap.get(uniqueId);        // Локальная SubTask
+        inMemoryHistoryManager.add(localSubTask);
+        return localSubTask;
     }
 
 // Блок вызова списка задач
@@ -251,19 +270,9 @@ public class InMemoryTaskManager implements TaskManager{
     }
 
     // Блок истории
-    /*@Override
+    @Override
     public List<Task> getHistory() {
-        return historyList;
+        return InMemoryHistoryManager.historyList;
     }
 
-    @Override
-    public void add(Task task){
-        if (historyList.size() < 10) {
-            historyList.add(task);
-        } else {
-            historyList.remove(0);
-            historyList.add(task);
-        }
-    }
-*/
 }

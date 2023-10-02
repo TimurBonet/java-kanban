@@ -8,7 +8,7 @@ public final class Managers <T extends Task>{
         return new InMemoryHistoryManager();
     }
 
-    static TaskManager Default(){
+    static TaskManager getDefault(){
         return new InMemoryTaskManager();
     }
 }
