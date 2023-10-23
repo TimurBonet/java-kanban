@@ -12,15 +12,15 @@ public class Main {
         taskManager.createTask(new Task("Поездка", "собрать вещи в дорогу", "NEW"));
         taskManager.createTask(
                 new Task("Покупка столика", "Выбрать столик в мебельном", "IN_PROGRESS"));
-        System.out.println("Проверка списка Tasks.Task");
-        System.out.println(taskManager.getTaskList(taskManager.getTaskMap()));
+        //System.out.println("Проверка списка Tasks.Task");
+        //System.out.println(taskManager.getTaskList(taskManager.getTaskMap()));
 
         taskManager.createEpic(
                 new Epic("Переселение", "Собираем вещи, перевозим"));
         taskManager.createEpic(
                 new Epic("Учеба", "Разбираем по винтикам темы"));
-        System.out.println("Проверка списка Tasks.Epic");
-        System.out.println(taskManager.getEpicList(taskManager.getEpicMap()));
+        //System.out.println("Проверка списка Tasks.Epic");
+        //System.out.println(taskManager.getEpicList(taskManager.getEpicMap()));
 
         taskManager.createSubTask(
                 new SubTask("Перевозка вещей", "Собираем вещи, перевозим", "DONE", 2));
@@ -67,6 +67,7 @@ public class Main {
         taskManager.updateEpic(updateEpic);
         System.out.println(taskManager.getEpicList(taskManager.getEpicMap()));*/
         System.out.println("-----Вызываем 11 задач по id-------");
+
         taskManager.getEpicById(2);
         taskManager.getEpicById(3);
         taskManager.getSubTaskById(7);
@@ -80,6 +81,18 @@ public class Main {
         taskManager.getTaskById(1);
         //HistoryManager historyManager = new InMemoryHistoryManager();
         System.out.println(taskManager.getHistory());
-        System.out.println("Получаем список из 10 задач 1-я вызванная удалена");
+        System.out.println("Длина списка " + taskManager.getHistory().size());
+        taskManager.clearSubTaskById(5);
+        System.out.println(taskManager.getHistory());
+        System.out.println("Длина списка " + taskManager.getHistory().size());
+        taskManager.clearEpicById(2);
+        System.out.println(taskManager.getHistory());
+        System.out.println("Длина списка " + taskManager.getHistory().size());
+        taskManager.clearEpicById(3);
+        System.out.println(taskManager.getHistory());
+        System.out.println("Длина списка " + taskManager.getHistory().size());
+        taskManager.clearTaskById(0);
+        System.out.println(taskManager.getHistory());
+        System.out.println("Длина списка " + taskManager.getHistory().size());
     }
 }

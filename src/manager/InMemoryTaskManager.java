@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class InMemoryTaskManager implements TaskManager{
+public class InMemoryTaskManager implements TaskManager {
     private int uniqueId = 0;
     private HashMap<Integer, Task> taskMap = new HashMap<>();
     private HashMap<Integer, SubTask> subTaskMap = new HashMap<>();
@@ -236,6 +236,7 @@ public class InMemoryTaskManager implements TaskManager{
             System.out.println("Нет обычной задачи с таким Id.");
         } else {
             taskMap.remove(uniqueId);
+            inMemoryHistoryManager.remove(uniqueId);
         }
     }
 
@@ -248,6 +249,7 @@ public class InMemoryTaskManager implements TaskManager{
                 epicMap.get(key).getSubTaskForEpic().remove(subTaskMap.get(uniqueId));
             }
             subTaskMap.remove(uniqueId);
+            inMemoryHistoryManager.remove(uniqueId);
         }
     }
 
@@ -264,15 +266,17 @@ public class InMemoryTaskManager implements TaskManager{
             }
             for (int i : idOfSubTasks) {
                 subTaskMap.remove(i);
+                inMemoryHistoryManager.remove(i);
             }
             epicMap.remove(uniqueId);
+            inMemoryHistoryManager.remove(uniqueId);
         }
     }
 
     // Блок истории
     @Override
     public List<Task> getHistory() {
-        return InMemoryHistoryManager.historyList;
+        return inMemoryHistoryManager.getHistory();
     }
 
 }

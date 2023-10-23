@@ -2,26 +2,51 @@ package manager;
 
 import task.Task;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-public class InMemoryHistoryManager implements HistoryManager{
-    static final int LIST_SIZE = 10;
-    public static List<Task> historyList = new ArrayList<>();
+public class InMemoryHistoryManager implements HistoryManager {
+    public static Map<Integer, Task> historyMap = new HashMap<>();
 
-    @Override
-    public List<Task> getHistory() {
-        return historyList;
-    }
+    CustomLinkedList<Task> customLinkedList = new CustomLinkedList<>();
 
     @Override
-    public void add(Task task){
-        if (historyList.size() < LIST_SIZE) {
-            historyList.add(task);
+    public void add(Task task) {
+        int id = task.getId();
+        if (historyMap.containsKey(id)) {
+            customLinkedList.removeNode(task);
+            customLinkedList.linkLast(task);
         } else {
-            historyList.remove(0);
-            historyList.add(task);
+            customLinkedList.linkLast(task);
+            historyMap.put(id, customLinkedList.list.getLast());
         }
     }
 
+    @Override
+    public List<Task> getHistory() {
+        return customLinkedList.getTasks(customLinkedList.list);
+    }
+
+    @Override
+    public void remove(int id) {
+        if (historyMap.get(id) != null) {
+            customLinkedList.removeNode(historyMap.get(id));
+            historyMap.remove(id);
+        }
+    }
+}
+
+class CustomLinkedList<T> extends LinkedList { 
+    LinkedList<T> list = new LinkedList<>();
+
+    public void linkLast(T data) {
+        list.addLast(data);
+    }
+
+    public ArrayList<T> getTasks(LinkedList<T> l) {
+        return new ArrayList<>(l);
+    }
+
+    public void removeNode(T node) {
+        list.remove(node);
+    }
 }
