@@ -79,6 +79,7 @@ public class Main {
         taskManager.getTaskById(0);
         taskManager.getSubTaskById(7);
         taskManager.getTaskById(1);
+        System.out.println("-----END----");
         //HistoryManager historyManager = new InMemoryHistoryManager();
         System.out.println(taskManager.getHistory());
         System.out.println("Длина списка " + taskManager.getHistory().size());

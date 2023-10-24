@@ -5,48 +5,74 @@ import task.Task;
 import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    public static Map<Integer, Task> historyMap = new HashMap<>();
+    private final Map<Integer, Node<Task>> historyMap = new HashMap<>();
+    LinkedList<Node<Task>> list = new LinkedList<>(); // Смущает пункт про CustomLinkedList, может я его неправильно понял,
+    private Node<Task> first;                         // и имелось ввиду именно методы добавить, а не пытаться создать реализацию с нуля
+    private Node<Task> last;
 
-    CustomLinkedList<Task> customLinkedList = new CustomLinkedList<>();
 
     @Override
     public void add(Task task) {
         int id = task.getId();
         if (historyMap.containsKey(id)) {
-            customLinkedList.removeNode(task);
-            customLinkedList.linkLast(task);
+            removeNode(historyMap.get(id));
+            linkLast(task);
+            historyMap.remove(id);
+            historyMap.put(id, list.getLast());
         } else {
-            customLinkedList.linkLast(task);
-            historyMap.put(id, customLinkedList.list.getLast());
+            linkLast(task);
+            historyMap.put(id, list.getLast());
         }
     }
 
     @Override
     public List<Task> getHistory() {
-        return customLinkedList.getTasks(customLinkedList.list);
+        return getTasks(list);
     }
 
     @Override
     public void remove(int id) {
         if (historyMap.get(id) != null) {
-            customLinkedList.removeNode(historyMap.get(id));
+            removeNode(historyMap.get(id));
             historyMap.remove(id);
         }
     }
-}
 
-class CustomLinkedList<T> extends LinkedList { 
-    LinkedList<T> list = new LinkedList<>();
+    public static class Node<T> {  // Тут действительно у меня возникал вопрос почему в ТЗ предлагается создать отдельный класс под него
+        public T data;
+        public Node<T> next;
+        public Node<T> prev;
 
-    public void linkLast(T data) {
-        list.addLast(data);
+        public Node(Node<T> prev, T data, Node<T> next) {
+            this.data = data;
+            this.prev = prev;
+            this.next = next;
+        }
     }
 
-    public ArrayList<T> getTasks(LinkedList<T> l) {
-        return new ArrayList<>(l);
+    public void linkLast(Task data) {
+        final Node<Task> oldLast = last;
+        final Node<Task> node = new Node<>(oldLast, data, null);
+        last = node;
+        if (oldLast != null) {
+            oldLast.next = last;
+            list.add(last);
+        } else {
+            first = node;
+            list.add(first);
+        }
     }
 
-    public void removeNode(T node) {
+    public ArrayList<Task> getTasks(LinkedList<Node<Task>> l) {
+        ArrayList<Task> array = new ArrayList<>(l.size());
+        for (int i = 0; i < l.size(); i++) {
+            array.add(i, l.get(i).data);
+        }
+        return array;
+    }
+
+    public void removeNode(Node<Task> node) {
         list.remove(node);
     }
 }
+
