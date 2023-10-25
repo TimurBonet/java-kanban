@@ -6,39 +6,34 @@ import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
     private final Map<Integer, Node<Task>> historyMap = new HashMap<>();
-    LinkedList<Node<Task>> list = new LinkedList<>(); // Смущает пункт про CustomLinkedList, может я его неправильно понял,
-    private Node<Task> first;                         // и имелось ввиду именно методы добавить, а не пытаться создать реализацию с нуля
+    private Node<Task> first;
     private Node<Task> last;
 
 
     @Override
     public void add(Task task) {
-        int id = task.getId();
-        if (historyMap.containsKey(id)) {
-            removeNode(historyMap.get(id));
-            linkLast(task);
-            historyMap.remove(id);
-            historyMap.put(id, list.getLast());
-        } else {
-            linkLast(task);
-            historyMap.put(id, list.getLast());
+        if (task == null) {
+            return;
         }
+        final int id = task.getId();
+        removeNode(historyMap.get(id));
+        linkLast(task);
+        historyMap.put(id, last);
     }
 
     @Override
     public List<Task> getHistory() {
-        return getTasks(list);
+        return getTasks(historyMap);
     }
 
     @Override
     public void remove(int id) {
         if (historyMap.get(id) != null) {
             removeNode(historyMap.get(id));
-            historyMap.remove(id);
         }
     }
 
-    public static class Node<T> {  // Тут действительно у меня возникал вопрос почему в ТЗ предлагается создать отдельный класс под него
+    public static class Node<T> {
         public T data;
         public Node<T> next;
         public Node<T> prev;
@@ -56,23 +51,45 @@ public class InMemoryHistoryManager implements HistoryManager {
         last = node;
         if (oldLast != null) {
             oldLast.next = last;
-            list.add(last);
         } else {
             first = node;
-            list.add(first);
         }
     }
 
-    public ArrayList<Task> getTasks(LinkedList<Node<Task>> l) {
-        ArrayList<Task> array = new ArrayList<>(l.size());
-        for (int i = 0; i < l.size(); i++) {
-            array.add(i, l.get(i).data);
+    public ArrayList<Task> getTasks(Map<Integer, Node<Task>> historyMap) {   // Если здесь можно как-то улучшить код, буду признателен за подсказку
+        ArrayList<Task> array = new ArrayList<>(historyMap.values().size());
+        List<Node<Task>> nodes = new ArrayList<>(historyMap.values());
+        Node<Task> current = null;
+        while(array.size() != nodes.size()) {
+            for (Node<Task> n : nodes) {
+                if (n.prev == current) {
+                    array.add(n.data);
+                    current = n;
+                }
+            }
         }
         return array;
     }
 
-    public void removeNode(Node<Task> node) {
-        list.remove(node);
+    public void removeNode(Node<Task> node) {   //  кое-что почерпнул и адаптировал из вэбинара
+        if (node == null) return;
+        Node<Task> remove = historyMap.remove(node.data.getId());
+        if (remove == null) {
+            return;
+        }
+        if (remove.prev == null && remove.next == null) {
+            first = null;
+            last = null;
+        } else if (remove.prev == null) {
+            first = remove.next;
+            remove.next.prev = null;
+        } else if (remove.next == null) {
+            last = remove.prev;
+            remove.prev.next = null;
+        } else {
+            remove.prev.next = remove.next;
+            remove.next.prev = remove.prev;
+        }
     }
 }
 
