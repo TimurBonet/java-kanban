@@ -33,18 +33,6 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
-    public static class Node<T> {
-        public T data;
-        public Node<T> next;
-        public Node<T> prev;
-
-        public Node(Node<T> prev, T data, Node<T> next) {
-            this.data = data;
-            this.prev = prev;
-            this.next = next;
-        }
-    }
-
     public void linkLast(Task data) {
         final Node<Task> oldLast = last;
         final Node<Task> node = new Node<>(oldLast, data, null);
@@ -56,19 +44,24 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
-    public ArrayList<Task> getTasks(Map<Integer, Node<Task>> historyMap) {   // Если здесь можно как-то улучшить код, буду признателен за подсказку
-        ArrayList<Task> array = new ArrayList<>(historyMap.values().size());
+    public List<Task> getTasks(Map<Integer, Node<Task>> historyMap) {   // Если здесь можно как-то улучшить код, буду признателен за подсказку
+        List<Task> arrayTasks = new ArrayList<>(historyMap.values().size());
         List<Node<Task>> nodes = new ArrayList<>(historyMap.values());
+
         Node<Task> current = null;
-        while(array.size() != nodes.size()) {
+        int previousSize = -1;
+
+        while(arrayTasks.size() != nodes.size() && arrayTasks.size() != previousSize) {
+            previousSize = arrayTasks.size();
             for (Node<Task> n : nodes) {
                 if (n.prev == current) {
-                    array.add(n.data);
+                    arrayTasks.add(n.data);
                     current = n;
+                    break;
                 }
             }
         }
-        return array;
+        return arrayTasks;
     }
 
     public void removeNode(Node<Task> node) {   //  кое-что почерпнул и адаптировал из вэбинара
@@ -89,6 +82,18 @@ public class InMemoryHistoryManager implements HistoryManager {
         } else {
             remove.prev.next = remove.next;
             remove.next.prev = remove.prev;
+        }
+    }
+
+    public static class Node<T> {
+        public T data;
+        public Node<T> next;
+        public Node<T> prev;
+
+        public Node(Node<T> prev, T data, Node<T> next) {
+            this.data = data;
+            this.prev = prev;
+            this.next = next;
         }
     }
 }
