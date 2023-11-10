@@ -3,6 +3,8 @@ package task;
 import java.util.ArrayList;
 import java.util.List;
 
+import static manager.TasksTypes.EPIC;
+
 public class Epic extends Task {
     private List<SubTask> subTaskForEpic = new ArrayList<>();
     //protected String status;
@@ -10,6 +12,7 @@ public class Epic extends Task {
     public Epic(String name, String description) {
         super.name = name;
         super.description = description;
+        super.type = EPIC.getType();
     }
 
     public List<SubTask> getSubTaskForEpic() {
@@ -31,6 +34,7 @@ public class Epic extends Task {
                 ", status='" + status + '\'' +
                 ",  subtasks=' " + subTaskForEpic + '\'' +
                 '}' + "\n";
+
     }
 
 

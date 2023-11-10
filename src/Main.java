@@ -1,3 +1,4 @@
+import manager.FileBackedTasksManager;
 import manager.HistoryManager;
 import manager.InMemoryHistoryManager;
 import manager.InMemoryTaskManager;
@@ -5,31 +6,34 @@ import task.Epic;
 import task.SubTask;
 import task.Task;
 
+import java.io.File;
+import java.nio.file.Path;
+
 public class Main {
 
-    public static void main(String[] args) {
-        InMemoryTaskManager taskManager = new InMemoryTaskManager();
-        taskManager.createTask(new Task("Поездка", "собрать вещи в дорогу", "NEW"));
+    //public static void main(String[] args) {
+        //InMemoryTaskManager taskManager = new InMemoryTaskManager();
+        /*taskManager.createTask(new Task("Поездка", "собрать вещи в дорогу", "NEW"));
         taskManager.createTask(
-                new Task("Покупка столика", "Выбрать столик в мебельном", "IN_PROGRESS"));
+                new Task("Покупка столика", "Выбрать столик в мебельном", "IN_PROGRESS"));*/
         //System.out.println("Проверка списка Tasks.Task");
         //System.out.println(taskManager.getTaskList(taskManager.getTaskMap()));
 
-        taskManager.createEpic(
+        /*taskManager.createEpic(
                 new Epic("Переселение", "Собираем вещи, перевозим"));
         taskManager.createEpic(
-                new Epic("Учеба", "Разбираем по винтикам темы"));
+                new Epic("Учеба", "Разбираем по винтикам темы"));*/
         //System.out.println("Проверка списка Tasks.Epic");
         //System.out.println(taskManager.getEpicList(taskManager.getEpicMap()));
 
-        taskManager.createSubTask(
+        /*taskManager.createSubTask(
                 new SubTask("Перевозка вещей", "Собираем вещи, перевозим", "DONE", 2));
         taskManager.createSubTask(
                 new SubTask("Перевозим посуду", "Укладываем посуду", "DONE", 2));
         taskManager.createSubTask(
                 new SubTask("Перевозим мебель", "Разобрать и перевезти диван", "IN_PROGRESS", 2));
         taskManager.createSubTask(
-                new SubTask("Подготовка к учебе", "раскладываем тетрадки", "NEW", 3));
+                new SubTask("Подготовка к учебе", "раскладываем тетрадки", "NEW", 3));*/
         /*System.out.println("Проверка списка subTask");
         System.out.println(taskManager.getSubTaskList(taskManager.getSubTaskMap()));
         System.out.println("Проверка списка Tasks.Epic после внесения subTask");
@@ -66,7 +70,7 @@ public class Main {
         updateEpic.setName("Другой урок");
         taskManager.updateEpic(updateEpic);
         System.out.println(taskManager.getEpicList(taskManager.getEpicMap()));*/
-        System.out.println("-----Вызываем 11 задач по id-------");
+        /*System.out.println("-----Вызываем 11 задач по id-------");
 
         taskManager.getEpicById(2);
         taskManager.getEpicById(3);
@@ -95,5 +99,10 @@ public class Main {
         taskManager.clearTaskById(0);
         System.out.println(taskManager.getHistory());
         System.out.println("Длина списка " + taskManager.getHistory().size());
-    }
+
+
+
+
+
+    }*/
 }

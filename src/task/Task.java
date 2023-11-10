@@ -1,11 +1,18 @@
 package task;
 
+import manager.TasksTypes;
+
+import static manager.TasksTypes.SUBTASK;
+import static manager.TasksTypes.TASK;
+
 public class Task {
+    protected String type;
     protected String name;
     protected String description;
     protected String status;
     protected int id;
-    //protected String status;
+    protected int epicId;
+
 
     public Task() {
     }
@@ -14,6 +21,7 @@ public class Task {
         this.name = name;
         this.description = description;
         this.status = status;
+        this.type = TASK.getType();
     }
 
     public String getName() {
@@ -35,6 +43,9 @@ public class Task {
     public int getId() {
         return id;
     }
+    public String getType() {
+        return this.type;
+    }
 
     public void setId(int id) {
         this.id = id;
@@ -46,6 +57,9 @@ public class Task {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+    public int getEpicId() {
+        return epicId;
     }
 
     @Override

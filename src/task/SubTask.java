@@ -1,13 +1,17 @@
 package task;
 
+import static manager.TasksTypes.EPIC;
+import static manager.TasksTypes.SUBTASK;
+
 public class SubTask extends Task {
-    protected int epicId;
+    //protected int epicId;
 
     public SubTask(String name, String description, String status, int epicId) {
         super.name = name;
         super.description = description;
         super.status = status;
-        this.epicId = epicId;
+        super.epicId = epicId;
+        super.type = SUBTASK.getType();
     }
 
     public int getEpicId() {
@@ -27,5 +31,6 @@ public class SubTask extends Task {
                 ", epicId ='" + epicId + '\'' +
                 ", status='" + status + '\'' +
                 '}' + "\n";
+
     }
 }
