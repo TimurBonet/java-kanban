@@ -106,6 +106,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void createEpic(Epic newEpic) {                              // Создать новый эпик-задачу
         newEpic.setId(uniqueId);
+        newEpic.setStatus("NEW");  //костыль
         epicMap.put(uniqueId, newEpic);
         assigningId();
     }
