@@ -16,7 +16,7 @@ import java.util.List;
 
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
-    private String directory = "c:\\tasksDirectory";
+    private String directory = "\\tasksDirectory";
     private String fileName = "\\tasks.csv";
     private String history;
     static List<Integer> historyFromString;
@@ -73,6 +73,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     static FileBackedTasksManager loadFromFile(File file){
         try (BufferedReader csvReader = new BufferedReader(new FileReader(file))) {
             List<String> linesOfCSV = new ArrayList<>();
+            List<Integer> historyId = null;
             List<String[]> lines = new ArrayList<>();
             int idFromSave = -1;
             while (csvReader.ready()) {
@@ -83,14 +84,38 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             }
             idFromSave = getMaxIdFromFile(lines);
             System.out.println("Max: " + idFromSave);
-            parseFromFileToTasks(lines);
+            for(int j = 1; j< linesOfCSV.size(); j++){
+                if(linesOfCSV.get(j).isEmpty() && j<linesOfCSV.size()-1) {
+                    StringBuilder txt = new StringBuilder();
+                    for (String s : linesOfCSV.get(j + 1).split(",")) {
+                        txt.append(s).append(",");
+                    }
+                    historyId = historyFromString(txt.toString());
+                    historyFromString = historyId;
+                    break;
+                }
+                distributeTaskToMap(fromString(linesOfCSV.get(j)));
+            }
             taskManager.uniqueId = idFromSave + 1;
         } catch (IOException e) {
             System.out.println("Not found");
         }
         return new FileBackedTasksManager();
     }
-    
+
+    public static void distributeTaskToMap(Task task){
+        switch (task.getType()){
+            case "TASK":
+                taskManager.taskMap.put(task.getId(),task);
+                break;
+            case "SUBTASK":
+                taskManager.subTaskMap.put(task.getId(),(SubTask) task);
+                break;
+            case "EPIC":
+                taskManager.epicMap.put(task.getId(),(Epic) task);
+                break;
+        }
+    }
     public static int getMaxIdFromFile(List<String[]> lines){
         int idTasks = -1;
         for (int i = 1; i < lines.size(); i++) {
@@ -110,7 +135,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 task.getDescription() + "," + task.getEpicId();
     }
 
-    public static void parseFromFileToTasks(List<String[]> lines) {   // мой аналог Task fromString(String value) если не подходит, буду переписывать.
+    /*public static void parseFromFileToTasks(List<String[]> lines) {   // мой аналог Task fromString(String value) если не подходит, буду переписывать.
         int id = -1;
         List<Integer> historyId = null;
         for (int i = 1; i < lines.size(); i++) {
@@ -151,6 +176,40 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 }
             }
         }
+    }*/
+
+    public static Task fromString(String value) {   // мой Task fromString(String value)
+        int id = -1;
+        String[] curLine = value.split(",");
+        Task resultTask = null;
+        switch (curLine[1]) {
+            case "TASK":
+                id = Integer.parseInt(curLine[0]);
+                Task task = new Task(curLine[2], curLine[4], curLine[3]);
+                task.setId(id);
+                System.out.println(task);
+                //taskManager.taskMap.put(id, task);
+                resultTask = task;
+                break;
+            case "SUBTASK":
+                id = Integer.parseInt(curLine[0]);
+                SubTask subTask = new SubTask(curLine[2], curLine[4], curLine[3], Integer.parseInt(curLine[5]));
+                subTask.setId(id);
+                System.out.println(subTask);
+                //taskManager.subTaskMap.put(id, subTask);
+                resultTask = subTask;
+                break;
+            case "EPIC":
+                id = Integer.parseInt(curLine[0]);
+                Epic epic = new Epic(curLine[2], curLine[4]);
+                epic.setId(id);
+                epic.setStatus(curLine[3]);
+                System.out.println(epic);
+                //taskManager.epicMap.put(id, epic);
+                resultTask = epic;
+                break;
+        }
+        return resultTask;
     }
 
     String historyToString(HistoryManager manager) {
@@ -326,7 +385,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     public static void main(String[] args) {
-        Path path = Path.of("c:\\tasksDirectory\\tasks.csv");
+        Path path = Path.of("\\tasksDirectory\\tasks.csv");
         File file = new File(String.valueOf(path));
         FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager();
         fileBackedTasksManager.createTask(new Task("это1", "собрать вещи в дорогу", "NEW"));
@@ -346,6 +405,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         System.out.println(fileBackedTasksManager.history);
 
         FileBackedTasksManager fileBackedTasksManager2 = loadFromFile(file);
+
+        System.out.println(taskManager.taskMap);
+        System.out.println(taskManager.subTaskMap);
+        System.out.println(taskManager.epicMap);
         for (Integer i : historyFromString){
             System.out.print(i + " ");
         }
