@@ -16,17 +16,20 @@ import java.util.List;
 
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
-    private String directory = "\\tasksDirectory";
-    private String fileName = "\\tasks.csv";
+    private String directory = "\\tasksDir";
+    private String fileName = "\\tasks2.csv";
     private String history;
     static List<Integer> historyFromString;
     private Path path;
     private HashMap<Integer, String> saveMap = new HashMap<>();
-    private String  header = "id,type,name,status,description,epic";
-    static InMemoryTaskManager taskManager = new InMemoryTaskManager(); // обратить внимание
-    HistoryManager manager = this.inMemoryHistoryManager;
-    
-    public void writeHeader(String text, String directory, String fileName) throws IOException{
+    private String header = "id,type,name,status,description,epic";
+    static InMemoryTaskManager taskManager = new InMemoryTaskManager();
+
+    public FileBackedTasksManager(File file) {
+        path = file.toPath();
+    }
+
+    public void writeHeader(String text, String directory, String fileName) throws IOException {
         path = Files.createFile(Paths.get(directory, fileName));
         Files.writeString(path, text, StandardOpenOption.APPEND);
         Files.writeString(path, "\n", StandardOpenOption.APPEND);
@@ -36,13 +39,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         try {
             if (!Files.isDirectory(Paths.get(directory))) {
                 Files.createDirectory(Paths.get(directory));
-                writeHeader(header,directory,fileName);
+                writeHeader(header, directory, fileName);
             } else if (!Files.exists(Paths.get(directory, fileName))) {
-                writeHeader(header,directory,fileName);
+                writeHeader(header, directory, fileName);
             }
             path = Path.of(directory, fileName);
             Files.deleteIfExists(path);
-            writeHeader(header,directory,fileName);
+            writeHeader(header, directory, fileName);
             List<Task> tsk = this.getTaskList(this.taskMap);
             for (Task t : tsk) {
                 saveMap.put(t.getId(), toString(t));
@@ -59,7 +62,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 Files.writeString(path, saveMap.get(i), StandardOpenOption.APPEND);
                 Files.writeString(path, "\n", StandardOpenOption.APPEND);
             }
-            history = historyToString(manager);
+            history = historyToString(this.inMemoryHistoryManager);
             Files.writeString(path, "\n", StandardOpenOption.APPEND);
             Files.writeString(path, history, StandardOpenOption.APPEND);
 
@@ -70,7 +73,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     //public void loadFromFile(Path path) {
-    static FileBackedTasksManager loadFromFile(File file){
+    static FileBackedTasksManager loadFromFile(File file) {
         try (BufferedReader csvReader = new BufferedReader(new FileReader(file))) {
             List<String> linesOfCSV = new ArrayList<>();
             List<Integer> historyId = null;
@@ -79,13 +82,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             while (csvReader.ready()) {
                 linesOfCSV.add(csvReader.readLine());
             }
-            for (String s : linesOfCSV) {                   
+            for (String s : linesOfCSV) {
                 lines.add(s.split(","));
             }
             idFromSave = getMaxIdFromFile(lines);
             System.out.println("Max: " + idFromSave);
-            for(int j = 1; j< linesOfCSV.size(); j++){
-                if(linesOfCSV.get(j).isEmpty() && j<linesOfCSV.size()-1) {
+            for (int j = 1; j < linesOfCSV.size(); j++) {
+                if (linesOfCSV.get(j).isEmpty() && j < linesOfCSV.size() - 1) {
                     StringBuilder txt = new StringBuilder();
                     for (String s : linesOfCSV.get(j + 1).split(",")) {
                         txt.append(s).append(",");
@@ -94,32 +97,36 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     historyFromString = historyId;
                     break;
                 }
+                if (linesOfCSV.get(j).isEmpty() && j == linesOfCSV.size() - 1) {
+                    break;
+                }
                 distributeTaskToMap(fromString(linesOfCSV.get(j)));
             }
             taskManager.uniqueId = idFromSave + 1;
         } catch (IOException e) {
             System.out.println("Not found");
         }
-        return new FileBackedTasksManager();
+        return new FileBackedTasksManager(file);
     }
 
-    public static void distributeTaskToMap(Task task){
-        switch (task.getType()){
+    public static void distributeTaskToMap(Task task) {
+        switch (task.getType()) {
             case "TASK":
-                taskManager.taskMap.put(task.getId(),task);
+                taskManager.taskMap.put(task.getId(), task);
                 break;
             case "SUBTASK":
-                taskManager.subTaskMap.put(task.getId(),(SubTask) task);
+                taskManager.subTaskMap.put(task.getId(), (SubTask) task);
                 break;
             case "EPIC":
-                taskManager.epicMap.put(task.getId(),(Epic) task);
+                taskManager.epicMap.put(task.getId(), (Epic) task);
                 break;
         }
     }
-    public static int getMaxIdFromFile(List<String[]> lines){
+
+    public static int getMaxIdFromFile(List<String[]> lines) {
         int idTasks = -1;
         for (int i = 1; i < lines.size(); i++) {
-            if(lines.get(i)[0].isEmpty()){
+            if (lines.get(i)[0].isEmpty()) {
                 break;
             }
             int id = Integer.parseInt(lines.get(i)[0]);
@@ -215,7 +222,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     String historyToString(HistoryManager manager) {
         StringBuilder history = new StringBuilder();
         List<Task> hist = manager.getHistory();
-        if(hist.isEmpty()){
+        if (hist.isEmpty()) {
             return "";
         }
         for (Task t : hist) {
@@ -317,7 +324,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     @Override
     public Task getTaskById(int uniqueId) {
-        Task thisTask =super.getTaskById(uniqueId);
+        Task thisTask = super.getTaskById(uniqueId);
         save();
         return thisTask;
     }
@@ -385,9 +392,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     public static void main(String[] args) {
-        Path path = Path.of("\\tasksDirectory\\tasks.csv");
+        Path path = Path.of("\\tasksDir\\tasks2.csv");
         File file = new File(String.valueOf(path));
-        FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager();
+        FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(file);
         fileBackedTasksManager.createTask(new Task("это1", "собрать вещи в дорогу", "NEW"));
         fileBackedTasksManager.createTask(new Task("это2 столика", "Выбрать столик в мебельном", "IN_PROGRESS"));
         fileBackedTasksManager.createEpic(new Epic("это3", "Собираем вещи перевозим"));
@@ -399,17 +406,15 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         fileBackedTasksManager.getEpicById(2);
         fileBackedTasksManager.getTaskById(0);
         fileBackedTasksManager.getTaskById(1);
-        for(Integer i : fileBackedTasksManager.saveMap.keySet()){
+        for (Integer i : fileBackedTasksManager.saveMap.keySet()) {
             System.out.println(fileBackedTasksManager.saveMap.get(i));
         }
         System.out.println(fileBackedTasksManager.history);
-
         FileBackedTasksManager fileBackedTasksManager2 = loadFromFile(file);
-
-        System.out.println(taskManager.taskMap);
-        System.out.println(taskManager.subTaskMap);
-        System.out.println(taskManager.epicMap);
-        for (Integer i : historyFromString){
+        System.out.println(fileBackedTasksManager2.taskManager.taskMap);      // перепроверил, создается новая папка с файлом в корневой директории
+        System.out.println(fileBackedTasksManager2.taskManager.subTaskMap);   
+        System.out.println(fileBackedTasksManager2.taskManager.epicMap);
+        for (Integer i : historyFromString) {
             System.out.print(i + " ");
         }
 
