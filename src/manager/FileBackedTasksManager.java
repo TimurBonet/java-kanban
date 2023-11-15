@@ -390,7 +390,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     public static void main(String[] args){
 
-        File file = new File("resources\\tasks.csv");
+        File file = new File("\\tasks.csv");
 
         FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(file);
         fileBackedTasksManager.createTask(new Task("это1", "собрать вещи в дорогу", "NEW"));

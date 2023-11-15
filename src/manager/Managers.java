@@ -12,6 +12,6 @@ public final class Managers <T extends Task>{
 
     public static TaskManager getDefault(){
        // return new InMemoryTaskManager();
-        return new FileBackedTasksManager(new File("\\resources\\tasks.csv"));
+        return new FileBackedTasksManager(new File("\\tasks.csv"));
     }
 }
