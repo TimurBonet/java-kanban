@@ -10,8 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
-    File file ;
-    String history;
+    private File file ;
     
     public FileBackedTasksManager(File file) {
          this.file = file;
@@ -41,11 +40,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 br.newLine();
             }
 
-            history = historyToString(this.inMemoryHistoryManager);
             br.newLine();
-            br.write(history);
+            br.write(historyToString(this.inMemoryHistoryManager)); //так я изначально думал сделать, но решил разделить, чтобы было со стороны понятнее
             br.newLine();
-
 
         } catch (IOException e) {
             throw new ManagerSaveException("Не могу сохранить файл" + file.getName());
@@ -194,7 +191,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 Task task = new Task(curLine[2], curLine[4], curLine[3]);
                 task.setId(id);
                 System.out.println(task);
-                //taskManager.taskMap.put(id, task);
                 resultTask = task;
                 break;
             case "SUBTASK":
@@ -202,7 +198,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 SubTask subTask = new SubTask(curLine[2], curLine[4], curLine[3], Integer.parseInt(curLine[5]));
                 subTask.setId(id);
                 System.out.println(subTask);
-                //taskManager.subTaskMap.put(id, subTask);
                 resultTask = subTask;
                 break;
             case "EPIC":
@@ -211,7 +206,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 epic.setId(id);
                 epic.setStatus(curLine[3]);
                 System.out.println(epic);
-                //taskManager.epicMap.put(id, epic);
                 resultTask = epic;
                 break;
         }
@@ -411,11 +405,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         fileBackedTasksManager.getTaskById(0);
         fileBackedTasksManager.getTaskById(1);
 
-        System.out.println(fileBackedTasksManager.history);
+        System.out.println(fileBackedTasksManager.inMemoryHistoryManager);
         FileBackedTasksManager fileBackedTasksManager2 = loadFromFile(file);
-        System.out.println(fileBackedTasksManager2.taskMap);      // перепроверил, создается новая папка с файлом в корневой директории
-        System.out.println(fileBackedTasksManager2.subTaskMap);
-        System.out.println(fileBackedTasksManager2.epicMap);
+        System.out.println(fileBackedTasksManager2.getTaskList(fileBackedTasksManager2.taskMap));      // По идее так, но у меня всё ещё не работает.
+        System.out.println(fileBackedTasksManager2.getSubTaskList(fileBackedTasksManager2.subTaskMap));
+        System.out.println(fileBackedTasksManager2.getEpicList(fileBackedTasksManager2.epicMap));
 
 
     }
