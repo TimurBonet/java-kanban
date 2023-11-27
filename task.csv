@@ -1,0 +1,6 @@
+id,type,name,status,description,epic,startTime,duration
+0,TASK,nt1,NEW,dt1,0,15-15_15.11.2024,44
+2,SUBTASK,nst11,NEW,dst11,1,13-13_13.06.2024,23
+1,EPIC,ne1,NEW,de1,0,13-13_13.06.2024,0
+
+

@@ -36,11 +36,11 @@ public interface TaskManager {
 
     // Блок вызова списка задач (Стоит ли попробовать унифицировать это поигравшись с <T extends Class> ?? или нет смысла?)
 
-    List<Task> getTaskList(HashMap<Integer, Task> task);
+    List<Task> getTaskList();
 
-    List<SubTask> getSubTaskList(HashMap<Integer, SubTask> subTask);
+    List<SubTask> getSubTaskList();
 
-    List<Epic> getEpicList(HashMap<Integer, Epic> epic);
+    List<Epic> getEpicList();
 
     List<SubTask> getEpicSubtasks(int uniqueId);
 

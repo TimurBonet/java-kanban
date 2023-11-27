@@ -1,22 +1,52 @@
 package task;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 import static manager.TasksTypes.EPIC;
 
 public class Epic extends Task {
-    private List<SubTask> subTaskForEpic = new ArrayList<>();
-    //protected String status;
+    protected List<SubTask> subTaskForEpic = new ArrayList<>(); // если поле static то startTime 1го сабтаска отображается, но у всех.
+    //protected String status;                                  // в противном случае не вносятся изменения в startTime и Duration, а дублировать из в Epic, думаю, неверно
+    /*protected Duration duration ;
+    protected LocalDateTime startTime ;*/
+    protected LocalDateTime endTime =null;
+
 
     public Epic(String name, String description) {
         super.name = name;
         super.description = description;
         super.type = EPIC.getType();
+        getEpicStartTime();
+        this.duration = Duration.ofMinutes(this.epicDuration());
+        this.endTime = getEndTime();
     }
 
     public List<SubTask> getSubTaskForEpic() {
-        return subTaskForEpic;
+        return this.subTaskForEpic;
+    }
+
+    public long  epicDuration(){
+        long i = 0;
+        List<SubTask> sbt = this.getSubTaskForEpic();
+        for (SubTask s: sbt ) {
+            i+=s.getDuration();
+        }
+        return  i;
+        //super.duration = Duration.ofMinutes(i);
+    }
+
+    public /*LocalDateTime*/ void getEpicStartTime(){
+        if (!this.getSubTaskForEpic().isEmpty()) {
+            /*return */this.startTime = this.getSubTaskForEpic().get(0).getStartTime();
+
+        }else {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH-mm dd.MM.yyyy");
+            /*return*/ this.startTime =  LocalDateTime.parse("00-00 01.01.1970", formatter);
+        }
     }
 
     @Override
@@ -32,7 +62,10 @@ public class Epic extends Task {
                 " name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
-                ",  subtasks=' " + subTaskForEpic + '\'' +
+                ",  subtasks=' " + this.subTaskForEpic + '\'' +
+                ", startTime='" + startTime + '\'' +
+                ", duration='" + duration.toMinutes() + '\'' +
+                ", endTime='" + endTime + '\'' +
                 '}' + "\n";
 
     }

@@ -1,17 +1,24 @@
 package task;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import static manager.TasksTypes.EPIC;
 import static manager.TasksTypes.SUBTASK;
 
 public class SubTask extends Task {
     //protected int epicId;
 
-    public SubTask(String name, String description, String status, int epicId) {
+    public SubTask(String name, String description, String status, int epicId, String startTime, long duration) {
         super.name = name;
         super.description = description;
         super.status = status;
         super.epicId = epicId;
         super.type = SUBTASK.getType();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH-mm_dd.MM.yyyy");
+        super.startTime = LocalDateTime.parse(startTime,formatter);
+        super.duration = Duration.ofMinutes(duration);
     }
 
     public int getEpicId() {
@@ -30,6 +37,9 @@ public class SubTask extends Task {
                 ", description='" + description + '\'' +
                 ", epicId ='" + epicId + '\'' +
                 ", status='" + status + '\'' +
+                ", startTime='" + startTime + '\'' +
+                ", duration='" + duration.toMinutes() + '\'' +
+                ", endTime='" + getEndTime() + '\'' +
                 '}' + "\n";
 
     }

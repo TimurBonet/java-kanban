@@ -81,6 +81,8 @@ public class InMemoryTaskManager implements TaskManager {
         newSubTask.setId(uniqueId);
         subTaskMap.put(uniqueId, newSubTask);                     // добавляем субзадачу в мапу субзадач
         epicMap.get(epicId).getSubTaskForEpic().add(newSubTask);  // добавляем субзадачу в список субзадач эпика
+        epicMap.get(epicId).getEpicStartTime();                   // берём время старта(если субзадача 1я)
+        epicMap.get(epicId).epicDuration();                       // обновляем продолжительность
         epicMap.get(epicId).setStatus(getStatus(epicMap.get(epicId).getSubTaskForEpic())); // обновление статуса
         assigningId();                                            // меняем айди
     }
@@ -98,6 +100,7 @@ public class InMemoryTaskManager implements TaskManager {
             if (sub.getId() == uniqueId) {                            // элементы subTaskMap
                 int index = epicMap.get(epicId).getSubTaskForEpic().indexOf(sub);
                 epicMap.get(epicId).getSubTaskForEpic().set(index, newSubTask);  // помещаю в сабтаскЛист эпика с epicId
+                epicMap.get(epicId).epicDuration();                     // обновляем продолжительность
                 epicMap.get(epicId).setStatus(getStatus(epicMap.get(epicId).getSubTaskForEpic())); // обновление статуса
             }
         }
@@ -106,8 +109,12 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void createEpic(Epic newEpic) {                              // Создать новый эпик-задачу
         newEpic.setId(uniqueId);
-        newEpic.setStatus("NEW");  //костыль
+        newEpic.setStatus(getStatus(newEpic.getSubTaskForEpic()));      //костыль
+        newEpic.getEpicStartTime();
+        newEpic.epicDuration();
         epicMap.put(uniqueId, newEpic);
+        epicMap.get(uniqueId).getEpicStartTime();
+        epicMap.get(uniqueId).epicDuration();
         assigningId();
     }
 
@@ -118,8 +125,10 @@ public class InMemoryTaskManager implements TaskManager {
             if (uniqueId == subTaskMap.get(key).getEpicId()) {
                 newEpic.getSubTaskForEpic().add(subTaskMap.get(key));
             }
+
         }
         newEpic.setId(uniqueId);
+        newEpic.getEpicStartTime();
         newEpic.setStatus(getStatus(newEpic.getSubTaskForEpic()));
         epicMap.put(uniqueId, newEpic);
     }
@@ -127,10 +136,16 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public String getStatus(List<SubTask> subTaskForEpic) {
         ArrayList<String> subTaskStatuses = new ArrayList<>();
+        if(!subTaskForEpic.isEmpty()) {
+            int id = subTaskForEpic.get(0).getEpicId();
+            epicMap.get(id).getEpicStartTime();
+        }
+
         for (SubTask s : subTaskForEpic) {
             subTaskStatuses.add(s.getStatus());
         }
         if (subTaskStatuses.isEmpty()) {
+
             return "NEW";
         }
         if ((subTaskStatuses.contains("NEW"))
@@ -185,18 +200,18 @@ public class InMemoryTaskManager implements TaskManager {
 // Блок вызова списка задач
 
     @Override
-    public List<Task> getTaskList(HashMap<Integer, Task> task) {
-        return new ArrayList<>(task.values());
+    public List<Task> getTaskList() {
+        return new ArrayList<>(taskMap.values());
     }
 
     @Override
-    public List<SubTask> getSubTaskList(HashMap<Integer, SubTask> subTask) {
-        return new ArrayList<>(subTask.values());
+    public List<SubTask> getSubTaskList() {
+        return new ArrayList<>(subTaskMap.values());
     }
 
     @Override
-    public List<Epic> getEpicList(HashMap<Integer, Epic> epic) {
-        return new ArrayList<>(epic.values());
+    public List<Epic> getEpicList() {
+        return new ArrayList<>(epicMap.values());
     }
 
     @Override
