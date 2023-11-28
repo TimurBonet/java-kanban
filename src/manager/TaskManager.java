@@ -34,8 +34,6 @@ public interface TaskManager {
 
     SubTask getSubTaskById(int uniqueId);
 
-    // Блок вызова списка задач (Стоит ли попробовать унифицировать это поигравшись с <T extends Class> ?? или нет смысла?)
-
     List<Task> getTaskList();
 
     List<SubTask> getSubTaskList();
@@ -44,15 +42,12 @@ public interface TaskManager {
 
     List<SubTask> getEpicSubtasks(int uniqueId);
 
-    // Блок удаления всех задач
-
     void clearAllTasks(HashMap<Integer, Task> task);
 
     void clearAllSubTasks(HashMap<Integer, SubTask> subTask);
 
     void clearAllEpic(HashMap<Integer, Epic> epic);
 
-    // Блок удаления по ID
 
     void clearTaskById(int uniqueId);
 
@@ -60,6 +55,6 @@ public interface TaskManager {
 
     void clearEpicById(int uniqueId);
 
-    List<Task> getHistory(); // Немного не понял зачем дублировать сюда метод getHistory если он уж есть в HistoryManager
-                            // или это промежуточная стадия и в следующем задании будем убирать это в InMemoryHistoryManager?
+    List<Task> getHistory();
+
 }

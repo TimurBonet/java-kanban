@@ -10,10 +10,7 @@ import static manager.TasksTypes.EPIC;
 
 public class Epic extends Task {
     protected List<SubTask> subTaskForEpic = new ArrayList<>(); // если поле static то startTime 1го сабтаска отображается, но у всех.
-    //protected String status;                                  // в противном случае не вносятся изменения в startTime и Duration, а дублировать из в Epic, думаю, неверно
-    /*protected Duration duration ;
-    protected LocalDateTime startTime ;*/
-    protected LocalDateTime endTime =null;
+    protected LocalDateTime endTime =null;                      // в противном случае не вносятся изменения в startTime и Duration, а дублировать из в Epic, думаю, неверно
 
 
     public Epic(String name, String description) {
@@ -39,13 +36,13 @@ public class Epic extends Task {
         //super.duration = Duration.ofMinutes(i);
     }
 
-    public /*LocalDateTime*/ void getEpicStartTime(){
+    public void getEpicStartTime(){
         if (!this.getSubTaskForEpic().isEmpty()) {
-            /*return */this.startTime = this.getSubTaskForEpic().get(0).getStartTime();
+            this.startTime = this.getSubTaskForEpic().get(0).getStartTime();
 
         }else {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH-mm dd.MM.yyyy");
-            /*return*/ this.startTime =  LocalDateTime.parse("00-00 01.01.1970", formatter);
+            this.startTime =  LocalDateTime.parse("00-00 01.01.1970", formatter);
         }
     }
 

@@ -32,10 +32,10 @@ public class InMemoryTaskManager implements TaskManager {
 
     void assigningId() {
         uniqueId++;
-    }                           //теперь только в этом менеджере
+    }
 
     @Override
-    public void createTask(Task newTask) {                              // Создать новую обычную задачу
+    public void createTask(Task newTask) {
         newTask.setId(uniqueId);
         taskMap.put(uniqueId, newTask);
         assigningId();
@@ -62,8 +62,8 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateTask(Task newTask) {                  //  Теперь при обновлении задачи она заносится полностью
-        int uniqueId = newTask.getId();                     //  что, вроде как, соответствует ТЗ
+    public void updateTask(Task newTask) {
+        int uniqueId = newTask.getId();
         if (!taskMap.containsKey(uniqueId)) {
             System.out.println("Неверный Id");
             return;
@@ -72,23 +72,23 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void createSubTask(SubTask newSubTask) {                     // Создать новую субзадачу
-        int epicId = newSubTask.getEpicId();                             // извлекаем имя эпика для которого она создана
+    public void createSubTask(SubTask newSubTask) {
+        int epicId = newSubTask.getEpicId();
 
         if (!epicMap.containsKey(epicId)) {
             System.out.println(epicId + " - Эпик-задача с таким Id отсутствует");
         }
         newSubTask.setId(uniqueId);
-        subTaskMap.put(uniqueId, newSubTask);                     // добавляем субзадачу в мапу субзадач
-        epicMap.get(epicId).getSubTaskForEpic().add(newSubTask);  // добавляем субзадачу в список субзадач эпика
-        epicMap.get(epicId).getEpicStartTime();                   // берём время старта(если субзадача 1я)
-        epicMap.get(epicId).epicDuration();                       // обновляем продолжительность
-        epicMap.get(epicId).setStatus(getStatus(epicMap.get(epicId).getSubTaskForEpic())); // обновление статуса
-        assigningId();                                            // меняем айди
+        subTaskMap.put(uniqueId, newSubTask);
+        epicMap.get(epicId).getSubTaskForEpic().add(newSubTask);
+        epicMap.get(epicId).getEpicStartTime();
+        epicMap.get(epicId).epicDuration();
+        epicMap.get(epicId).setStatus(getStatus(epicMap.get(epicId).getSubTaskForEpic()));
+        assigningId();
     }
 
     @Override
-    public void updateSubTask(SubTask newSubTask) {                     // обновить субзадачу
+    public void updateSubTask(SubTask newSubTask) {
         int uniqueId = newSubTask.getId();
         if (!subTaskMap.containsKey(uniqueId)) {
             System.out.println("Неверный Id");
@@ -96,18 +96,18 @@ public class InMemoryTaskManager implements TaskManager {
         }
         subTaskMap.put(uniqueId, newSubTask);
         int epicId = newSubTask.getEpicId();
-        for (SubTask sub : epicMap.get(epicId).getSubTaskForEpic()) { //Упростили вложение т.к. подаются только
-            if (sub.getId() == uniqueId) {                            // элементы subTaskMap
+        for (SubTask sub : epicMap.get(epicId).getSubTaskForEpic()) {
+            if (sub.getId() == uniqueId) {
                 int index = epicMap.get(epicId).getSubTaskForEpic().indexOf(sub);
-                epicMap.get(epicId).getSubTaskForEpic().set(index, newSubTask);  // помещаю в сабтаскЛист эпика с epicId
-                epicMap.get(epicId).epicDuration();                     // обновляем продолжительность
-                epicMap.get(epicId).setStatus(getStatus(epicMap.get(epicId).getSubTaskForEpic())); // обновление статуса
+                epicMap.get(epicId).getSubTaskForEpic().set(index, newSubTask);
+                epicMap.get(epicId).epicDuration();
+                epicMap.get(epicId).setStatus(getStatus(epicMap.get(epicId).getSubTaskForEpic()));
             }
         }
     }
 
     @Override
-    public void createEpic(Epic newEpic) {                              // Создать новый эпик-задачу
+    public void createEpic(Epic newEpic) {
         newEpic.setId(uniqueId);
         newEpic.setStatus(getStatus(newEpic.getSubTaskForEpic()));      //костыль
         newEpic.getEpicStartTime();
@@ -164,7 +164,7 @@ public class InMemoryTaskManager implements TaskManager {
 // Блок получения задачи по ID
 
     @Override
-    public Epic getEpicById(int uniqueId) {                           //Получить эпик-задачу по ID
+    public Epic getEpicById(int uniqueId) {
         if (!epicMap.containsKey(uniqueId)) {
             System.out.println("Отсутствует Эпик - задача с таким ID.");
             return null;
@@ -172,27 +172,27 @@ public class InMemoryTaskManager implements TaskManager {
         Epic newEpic = epicMap.get(uniqueId);
         newEpic.setStatus(getStatus(newEpic.getSubTaskForEpic()));
         epicMap.put(uniqueId, newEpic);
-        Epic localEpic = epicMap.get(uniqueId);                //Локальные переменные, как я понял, вот так должны быть.
+        Epic localEpic = epicMap.get(uniqueId);
         inMemoryHistoryManager.add(localEpic);
         return localEpic;
     }
 
     @Override
-    public Task getTaskById(int uniqueId) {                               // Получить обычную задачу по ID
+    public Task getTaskById(int uniqueId) {
         if (!taskMap.containsKey(uniqueId)) {
             System.out.println("Отсутствует стандартная задача с таким ID.");
         }
-        Task loclTask = taskMap.get(uniqueId);                 //Локальный Task
+        Task loclTask = taskMap.get(uniqueId);
         inMemoryHistoryManager.add(loclTask);
         return loclTask;
     }
 
     @Override
-    public SubTask getSubTaskById(int uniqueId) {                            // Получить субзадачу по ID
+    public SubTask getSubTaskById(int uniqueId) {
         if (!subTaskMap.containsKey(uniqueId)) {
             System.out.println("Отсутствует субзадача с таким ID.");
         }
-        SubTask localSubTask = subTaskMap.get(uniqueId);        // Локальная SubTask
+        SubTask localSubTask = subTaskMap.get(uniqueId);
         inMemoryHistoryManager.add(localSubTask);
         return localSubTask;
     }
@@ -240,7 +240,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void clearAllEpic(HashMap<Integer, Epic> epic) {
-        subTaskMap.clear();                // предполагается что subTask могут существовать только как часть Tasks.Epic задачи.
+        subTaskMap.clear();
         epic.clear();
     }
 

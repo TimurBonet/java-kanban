@@ -8,7 +8,6 @@ import static manager.TasksTypes.EPIC;
 import static manager.TasksTypes.SUBTASK;
 
 public class SubTask extends Task {
-    //protected int epicId;
 
     public SubTask(String name, String description, String status, int epicId, String startTime, long duration) {
         super.name = name;

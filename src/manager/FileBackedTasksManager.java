@@ -3,13 +3,18 @@ package manager;
 import task.Epic;
 import task.SubTask;
 import task.Task;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.io.FileWriter;
+import java.io.FileReader;
 import java.lang.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
-    private File file ;
+    private final File file ;
 
     
     public FileBackedTasksManager(File file) {
@@ -41,7 +46,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             }
 
             br.newLine();
-            br.write(historyToString(this.inMemoryHistoryManager)); //так я изначально думал сделать, но решил разделить, чтобы было со стороны понятнее
+            br.write(historyToString(this.inMemoryHistoryManager));
             br.newLine();
 
         } catch (IOException e) {
@@ -140,49 +145,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return task.getId() + "," + task.getType() + "," + task.getName() + "," + task.getStatus() + "," +
                 task.getDescription() + "," + task.getEpicId() + "," + task.getStartTime().format(formatter) + "," + task.getDuration();
     }
-
-    /*public static void parseFromFileToTasks(List<String[]> lines) {   // мой аналог Task fromString(String value) если не подходит, буду переписывать.
-        int id = -1;
-        List<Integer> historyId = null;
-        for (int i = 1; i < lines.size(); i++) {
-            if (lines.get(i)[0].isEmpty() && i < lines.size()-1){
-                StringBuilder txt = new StringBuilder();
-                for (String s : lines.get(i + 1)) {
-                    txt.append(s).append(",");
-                }
-                historyId = historyFromString(txt.toString());
-                historyFromString = historyId;
-                i++;
-            } else if(lines.get(i)[0].isEmpty()) {
-                break;
-            } else {
-                switch (lines.get(i)[1]) {
-                    case "TASK":
-                        id = Integer.parseInt(lines.get(i)[0]);
-                        Task task = new Task(lines.get(i)[2], lines.get(i)[4], lines.get(i)[3]);
-                        task.setId(id);
-                        System.out.println(task);
-                        taskManager.taskMap.put(id, task);
-                        break;
-                    case "SUBTASK":
-                        id = Integer.parseInt(lines.get(i)[0]);
-                        SubTask subTask = new SubTask(lines.get(i)[2], lines.get(i)[4], lines.get(i)[3], Integer.parseInt(lines.get(i)[5]));
-                        subTask.setId(id);
-                        System.out.println(subTask);
-                        taskManager.subTaskMap.put(id, subTask);
-                        break;
-                    case "EPIC":
-                        id = Integer.parseInt(lines.get(i)[0]);
-                        Epic epic = new Epic(lines.get(i)[2], lines.get(i)[4]);
-                        epic.setId(id);
-                        epic.setStatus(lines.get(i)[3]);
-                        System.out.println(epic);
-                        taskManager.epicMap.put(id, epic);
-                        break;
-                }
-            }
-        }
-    }*/
 
     public static Task fromString(String value) {
         int id = -1;
