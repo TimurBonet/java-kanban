@@ -33,7 +33,6 @@ public class Epic extends Task {
             i+=s.getDuration();
         }
         return  i;
-        //super.duration = Duration.ofMinutes(i);
     }
 
     public void getEpicStartTime(){
@@ -48,12 +47,6 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        String subTask;
-        if (subTaskForEpic.isEmpty()) {
-            subTask = "отсутствуют";
-        } else {
-            subTask = subTaskForEpic.toString();
-        }
         return "Tasks.Epic{" +
                 " uniqueId='" + id + '\'' +
                 " name='" + name + '\'' +

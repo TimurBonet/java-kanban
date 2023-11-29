@@ -7,13 +7,12 @@ import task.SubTask;
 import task.Task;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-abstract class TaskManagerTest <T extends TaskManager>{ //Это пока всё что смог придумать, буду рад критике и советам)
+abstract class TaskManagerTest <T extends TaskManager>{
     protected T taskManager;
     protected Task task;
     protected Epic epic;

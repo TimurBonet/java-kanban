@@ -1,6 +1,9 @@
 package manager;
 
-import task.*;
+import task.Task;
+import task.SubTask;
+import task.Epic;
+import task.TaskStatus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -109,7 +112,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void createEpic(Epic newEpic) {
         newEpic.setId(uniqueId);
-        newEpic.setStatus(getStatus(newEpic.getSubTaskForEpic()));      //костыль
+        newEpic.setStatus(getStatus(newEpic.getSubTaskForEpic()));
         newEpic.getEpicStartTime();
         newEpic.epicDuration();
         epicMap.put(uniqueId, newEpic);
@@ -161,8 +164,6 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-// Блок получения задачи по ID
-
     @Override
     public Epic getEpicById(int uniqueId) {
         if (!epicMap.containsKey(uniqueId)) {
@@ -197,8 +198,6 @@ public class InMemoryTaskManager implements TaskManager {
         return localSubTask;
     }
 
-// Блок вызова списка задач
-
     @Override
     public List<Task> getTaskList() {
         return new ArrayList<>(taskMap.values());
@@ -226,7 +225,6 @@ public class InMemoryTaskManager implements TaskManager {
         return epicMap.get(uniqueId).getSubTaskForEpic();
     }
 
-// Блок удаления всех задач
 
     @Override
     public void clearAllTasks(HashMap<Integer, Task> task) {
@@ -243,8 +241,6 @@ public class InMemoryTaskManager implements TaskManager {
         subTaskMap.clear();
         epic.clear();
     }
-
-    // Блок удаления по ID
 
     @Override
     public void clearTaskById(int uniqueId) {
@@ -289,7 +285,6 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    // Блок истории
     @Override
     public List<Task> getHistory() {
         return inMemoryHistoryManager.getHistory();

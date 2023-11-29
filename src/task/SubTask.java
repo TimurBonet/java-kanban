@@ -4,7 +4,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static manager.TasksTypes.EPIC;
 import static manager.TasksTypes.SUBTASK;
 
 public class SubTask extends Task {

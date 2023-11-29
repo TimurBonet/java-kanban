@@ -2,7 +2,10 @@ package manager;
 
 import task.Task;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 
 public class InMemoryHistoryManager implements HistoryManager {
     private final Map<Integer, Node<Task>> historyMap = new HashMap<>();
@@ -44,7 +47,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
-    public List<Task> getTasks(Map<Integer, Node<Task>> historyMap) {   // Если здесь можно как-то улучшить код, буду признателен за подсказку
+    public List<Task> getTasks(Map<Integer, Node<Task>> historyMap) {
         List<Task> arrayTasks = new ArrayList<>(historyMap.values().size());
         List<Node<Task>> nodes = new ArrayList<>(historyMap.values());
 
@@ -64,7 +67,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         return arrayTasks;
     }
 
-    public void removeNode(Node<Task> node) {   //  кое-что почерпнул и адаптировал из вэбинара
+    public void removeNode(Node<Task> node) {
         if (node == null) return;
         Node<Task> remove = historyMap.remove(node.data.getId());
         if (remove == null) {

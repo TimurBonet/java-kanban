@@ -1,13 +1,9 @@
 package task;
 
-import manager.TasksTypes;
-
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static manager.TasksTypes.SUBTASK;
 import static manager.TasksTypes.TASK;
 
 public class Task {
