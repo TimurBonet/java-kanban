@@ -10,39 +10,52 @@ import static manager.TasksTypes.EPIC;
 
 public class Epic extends Task {
     protected List<SubTask> subTaskForEpic = new ArrayList<>(); // если поле static то startTime 1го сабтаска отображается, но у всех.
-    protected LocalDateTime endTime =null;                      // в противном случае не вносятся изменения в startTime и Duration, а дублировать из в Epic, думаю, неверно
-
+                          // в противном случае не вносятся изменения в startTime и Duration, а дублировать из в Epic, думаю, неверно
 
     public Epic(String name, String description) {
         super.name = name;
         super.description = description;
         super.type = EPIC.getType();
-        getEpicStartTime();
-        this.duration = Duration.ofMinutes(this.epicDuration());
-        this.endTime = getEndTime();
+        super.startTime = getStartTime();
+        super.duration = getDuration();
+        super.endTime = getEndTime();
     }
 
     public List<SubTask> getSubTaskForEpic() {
         return this.subTaskForEpic;
     }
-
-    public long  epicDuration(){
+    @Override
+    public Long getDuration(){
         long i = 0;
-        List<SubTask> sbt = this.getSubTaskForEpic();
-        for (SubTask s: sbt ) {
+        if(subTaskForEpic.isEmpty()){
+            return i;
+        }
+        for (SubTask s: subTaskForEpic ) {
             i+=s.getDuration();
         }
         return  i;
     }
-
-    public void getEpicStartTime(){
-        if (!this.getSubTaskForEpic().isEmpty()) {
-            this.startTime = this.getSubTaskForEpic().get(0).getStartTime();
-
+    @Override
+    public void setStartTime(LocalDateTime startTime){
+        super.startTime = startTime;
+    }
+    @Override
+    public LocalDateTime getStartTime(){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH-mm_dd.MM.yyyy");
+        if (!this.subTaskForEpic.isEmpty()) {
+            startTime = this.subTaskForEpic.get(0).getStartTime();
         }else {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH-mm dd.MM.yyyy");
-            this.startTime =  LocalDateTime.parse("00-00 01.01.1970", formatter);
+            return LocalDateTime.parse("00-00_01.01.1970",formatter);
         }
+        return startTime;
+    }
+
+    @Override
+    public LocalDateTime getEndTime() {
+        return super.getEndTime();
+    }
+    public void setEndTime() {
+        super.endTime = super.startTime.plus(Duration.ofMinutes(super.duration));
     }
 
     @Override
@@ -52,9 +65,9 @@ public class Epic extends Task {
                 " name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
-                ",  subtasks=' " + this.subTaskForEpic + '\'' +
+                ",  subtasks=' " + subTaskForEpic + '\'' +
                 ", startTime='" + startTime + '\'' +
-                ", duration='" + duration.toMinutes() + '\'' +
+                ", duration='" + duration + '\'' +
                 ", endTime='" + endTime + '\'' +
                 '}' + "\n";
 

@@ -3,6 +3,7 @@ package manager;
 import task.Epic;
 import task.SubTask;
 import task.Task;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -10,43 +11,35 @@ import java.io.IOException;
 import java.io.FileWriter;
 import java.io.FileReader;
 import java.lang.String;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.TreeSet;
-import java.util.HashMap;
-import java.util.Comparator;
+import java.util.*;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
-    private final File file ;
+    private File file = null;
 
-    
+    private TreeSet<Task> tasksTreeSet;
+
     public FileBackedTasksManager(File file) {
-         this.file = file;
+        this.file = file;
+        tasksTreeSet = new TreeSet<>(Comparator.comparing(Task::getStartTime));
+    }
+
+    public  FileBackedTasksManager(){
+        tasksTreeSet= new TreeSet<>(Comparator.comparing(Task::getStartTime));
     }
 
     public void save() {
-        try (BufferedWriter br = new BufferedWriter(new FileWriter(file))){
+        try (BufferedWriter br = new BufferedWriter(new FileWriter(file))) {
             String header = "id,type,name,status,description,epic,startTime,duration";
             br.write(header);
             br.newLine();
 
-            for (Integer i : taskMap.keySet()){
-                final Task task = taskMap.get(i);
+            List<Task> allTasks = getAllTasks();
+            for (Task task : allTasks) {
                 br.write(toString(task));
                 br.newLine();
-            }
-
-            for (Integer i : subTaskMap.keySet()){
-                final Task task = subTaskMap.get(i);
-                br.write(toString(task));
-                br.newLine();
-            }
-
-            for (Integer i : epicMap.keySet()){
-                final Task task = epicMap.get(i);
-                br.write(toString(task));
-                br.newLine();
+                ;
             }
 
             br.newLine();
@@ -55,14 +48,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
         } catch (IOException e) {
             throw new ManagerSaveException("Не могу сохранить файл" + file.getName());
-
         }
-
     }
 
     static FileBackedTasksManager loadFromFile(File file) {
         FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(file);
-        if(file.exists()) {
+        if (file.exists()) {
             try (BufferedReader csvReader = new BufferedReader(new FileReader(file))) {
                 List<String> linesOfCSV = new ArrayList<>();
                 List<String[]> lines = new ArrayList<>();
@@ -101,31 +92,44 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 throw new ManagerSaveException("Не могу прочитать из файла" + file.getName());
             }
         }
+        fileBackedTasksManager.setPrioritizedTasks();
         return fileBackedTasksManager;
     }
 
-    public static Task getHistoryFromList(Integer i, FileBackedTasksManager fileBackedTasksManager){
+    public static Task getHistoryFromList(Integer i, FileBackedTasksManager fileBackedTasksManager) {
         Task task = null;
-            if(fileBackedTasksManager.taskMap.containsKey(i)){
-                task = fileBackedTasksManager.getTaskById(i);
-            } else if(fileBackedTasksManager.subTaskMap.containsKey(i)){
-                task = fileBackedTasksManager.getSubTaskById(i);
-            } else if (fileBackedTasksManager.epicMap.containsKey(i)) {
-                task = fileBackedTasksManager.getEpicById(i);
-            }
-            return task;
+        if (fileBackedTasksManager.taskMap.containsKey(i)) {
+            task = fileBackedTasksManager.getTaskById(i);
+        } else if (fileBackedTasksManager.subTaskMap.containsKey(i)) {
+            task = fileBackedTasksManager.getSubTaskById(i);
+        } else if (fileBackedTasksManager.epicMap.containsKey(i)) {
+            task = fileBackedTasksManager.getEpicById(i);
+        }
+        return task;
     }
 
-    public static void distributeTaskToMap(Task task,FileBackedTasksManager fileBackedTasksManager) {
+    public static void distributeTaskToMap(Task task, FileBackedTasksManager fileBackedTasksManager) {
         switch (task.getType()) {
             case "TASK":
                 fileBackedTasksManager.taskMap.put(task.getId(), task);
                 break;
             case "SUBTASK":
                 fileBackedTasksManager.subTaskMap.put(task.getId(), (SubTask) task);
+                // попробуй обновлять Эпик каждое внесение сабстаска!
+                if (!fileBackedTasksManager.epicMap.isEmpty() && fileBackedTasksManager.epicMap.get(task.getEpicId())!=null ) {
+                    fileBackedTasksManager.epicMap.get(task.getEpicId()).getSubTaskForEpic().add((SubTask) task);
+                }
                 break;
             case "EPIC":
                 fileBackedTasksManager.epicMap.put(task.getId(), (Epic) task);
+                if (!fileBackedTasksManager.epicMap.isEmpty() && !fileBackedTasksManager.subTaskMap.isEmpty()) {
+                    int id = task.getId();
+                    for (SubTask s :  fileBackedTasksManager.subTaskMap.values()) {
+                        if(s.getEpicId() == id) {
+                            fileBackedTasksManager.epicMap.get(id).getSubTaskForEpic().add(s);
+                        }
+                    }
+                }
                 break;
         }
     }
@@ -157,7 +161,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         switch (curLine[1]) {
             case "TASK":
                 id = Integer.parseInt(curLine[0]);
-                Task task = new Task(curLine[2], curLine[4], curLine[3],curLine[6] ,Long.parseLong(curLine[7]));
+                Task task = new Task(curLine[2], curLine[4], curLine[3], curLine[6], Long.parseLong(curLine[7]));
                 task.setId(id);
                 System.out.println(task);
                 resultTask = task;
@@ -170,10 +174,14 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 resultTask = subTask;
                 break;
             case "EPIC":
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH-mm_dd.MM.yyyy");
                 id = Integer.parseInt(curLine[0]);
                 Epic epic = new Epic(curLine[2], curLine[4]);
                 epic.setId(id);
                 epic.setStatus(curLine[3]);
+                epic.setStartTime(LocalDateTime.parse(curLine[6], formatter));
+                epic.setDuration(Long.parseLong(curLine[7]));
+                epic.setEndTime();
                 System.out.println(epic);
                 resultTask = epic;
                 break;
@@ -181,7 +189,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return resultTask;
     }
 
-    String historyToString(HistoryManager manager) {
+    protected String historyToString(HistoryManager manager) {
         StringBuilder history = new StringBuilder();
         List<Task> hist = manager.getHistory();
         if (hist.isEmpty()) {
@@ -203,16 +211,60 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return idList;
     }
 
-    public  TreeSet<Task> getPrioritizedTasks() {
-        TreeSet<Task> allTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
-        allTasks.addAll(taskMap.values());
-        allTasks.addAll(subTaskMap.values());
-        allTasks.addAll(epicMap.values());
-
-        return allTasks;
+    public TreeSet<Task> getPrioritizedTasks() {
+            return tasksTreeSet;
+    }
+    public void setPrioritizedTasks(){
+        //TreeSet<Task> allTasks = new TreeSet<>(/*Comparator.comparing(Task::getStartTime)*/);
+        for (Task t : taskMap.values()) {
+            tasksTreeSet.add(t);
+        }
+        for (Task t : subTaskMap.values()) {
+            tasksTreeSet.add(t);
+        }
+        for (Task t : epicMap.values()) {
+            tasksTreeSet.add(t);
+        }
+        tasksTreeSet.stream().sorted();
 
     }
 
+    protected void checkIntersection() throws IntersectionIntervalException {
+        TreeSet<Task> tasks = getPrioritizedTasks();
+        List<Task> sortedList = new ArrayList<>();
+
+        for (Task task : tasks) {
+            sortedList.add(task);
+        }
+
+        for (int i = 0; i < sortedList.size(); i++) {
+            Task currentTask = sortedList.get(i);
+            for (int j = 0; j < sortedList.size(); j++) {
+                if (currentTask == sortedList.get(j)) {
+                    continue;
+                }
+                LocalDateTime firstStart = currentTask.getStartTime();
+                LocalDateTime firstEnd = currentTask.getEndTime();
+                LocalDateTime secondStart = sortedList.get(j).getStartTime();
+                LocalDateTime secondEnd = sortedList.get(j).getEndTime();
+
+                if (firstStart == null || secondStart == null) {
+                    return;
+                }
+
+                if (firstStart.isAfter(secondEnd) || firstEnd.isBefore(secondStart)) {
+                    continue;
+                } else {
+                    throw new IntersectionIntervalException("Пересечение выполнения задач!");
+                }
+            }
+        }
+    }
+
+    @Override
+    public ArrayList<Task> getAllTasks() {
+        return super.getAllTasks();
+    }
 
     @Override
     public HashMap<Integer, Task> getTaskMap() {
@@ -248,7 +300,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     @Override
     public String setStatus(String status) {
-        return super.setStatus(status);
+        return setStatus(status);
+
     }
 
     @Override
@@ -328,6 +381,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     @Override
+    public void clearAll() {
+        super.clearAll();
+        save();
+    }
+
+    @Override
     public void clearAllTasks(HashMap<Integer, Task> task) {
         super.clearAllTasks(task);
         save();
@@ -368,29 +427,30 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return super.getHistory();
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
 
         File file = new File("tasks.csv");
 
         FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(file);
-        fileBackedTasksManager.createTask(new Task("это1", "собрать вещи в дорогу", "NEW","21-13_11.12.2023", 69));
-        fileBackedTasksManager.createTask(new Task("это2 столика", "Выбрать столик в мебельном", "IN_PROGRESS","15-13_17.12.2023", 34));
+        fileBackedTasksManager.createTask(new Task("это1", "собрать вещи в дорогу", "NEW", "21-13_11.12.2023", 69));
+        fileBackedTasksManager.createTask(new Task("это2 столика", "Выбрать столик в мебельном", "IN_PROGRESS", "15-13_17.12.2023", 34));
         fileBackedTasksManager.createEpic(new Epic("это3", "Собираем вещи перевозим"));
         fileBackedTasksManager.createEpic(new Epic("это4", "Разбираем по винтикам темы"));
-        fileBackedTasksManager.createSubTask(new SubTask("это5 вещей", "Собираем вещи перевозим", "DONE", 2,"11-13_13.12.2023", 60));
-        fileBackedTasksManager.createSubTask(new SubTask("это6 посуду", "Укладываем посуду", "DONE", 2,"12-56_16.12.2023", 20));
-        fileBackedTasksManager.createTask(new Task("это7", "собрать вещи в дорогу", "NEW", "21-13_22.12.2023",50));
-        fileBackedTasksManager.createTask(new Task("это8", "собрать вещи в дорогу", "NEW", "22-11_23.12.2023",20));
+        fileBackedTasksManager.createSubTask(new SubTask("это5 вещей", "Собираем вещи перевозим", "DONE", 2, "11-13_13.12.2023", 60));
+        fileBackedTasksManager.createSubTask(new SubTask("это6 посуду", "Укладываем посуду", "DONE", 2, "12-56_16.12.2023", 20));
+        fileBackedTasksManager.createTask(new Task("это7", "собрать вещи в дорогу", "NEW", "21-13_22.12.2023", 50));
+        fileBackedTasksManager.createTask(new Task("это8", "собрать вещи в дорогу", "NEW", "22-11_23.12.2023", 20));
         fileBackedTasksManager.getEpicById(2);
         fileBackedTasksManager.getTaskById(0);
         fileBackedTasksManager.getTaskById(1);
 
+
         System.out.println(fileBackedTasksManager.inMemoryHistoryManager);
         FileBackedTasksManager fileBackedTasksManager2 = loadFromFile(file);
-        System.out.println(fileBackedTasksManager2.getTaskList());
-        System.out.println(fileBackedTasksManager2.getSubTaskList()); // здесь такой сложный метод из-за того что inMemoryTaskManager не static
+        // System.out.println(fileBackedTasksManager2.getTaskList());
+        // System.out.println(fileBackedTasksManager2.getSubTaskList()); // здесь такой сложный метод из-за того что inMemoryTaskManager не static
         // конструктор public List<Task> getTaskList(HashMap<Integer, Task> task) {return new ArrayList<>(task.values());}  находится в InMemoryTaskManager
-        System.out.println(fileBackedTasksManager2.getEpicList());
+        // System.out.println(fileBackedTasksManager2.getEpicList());
         System.out.println("Ниже сортированные задачи");
         System.out.println(fileBackedTasksManager2.getPrioritizedTasks());
     }

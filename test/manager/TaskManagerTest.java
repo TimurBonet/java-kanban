@@ -12,7 +12,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-abstract class TaskManagerTest <T extends TaskManager>{
+public abstract class TaskManagerTest <T extends TaskManager>{
     protected T taskManager;
     protected Task task;
     protected Epic epic;
@@ -99,6 +99,7 @@ abstract class TaskManagerTest <T extends TaskManager>{
 
         assertNotNull(savedEpics, "Задачи на возвращаются.");
         assertEquals(1, savedEpics.size(), "Неверное количество задач.");
+        assertEquals(epic.getStartTime(), savedEpics.get(0).getStartTime(), "StartTime е совпадает");
         assertEquals(epic, savedEpics.get(0), "Задачи не совпадают.");
     }
 

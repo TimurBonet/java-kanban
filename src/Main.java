@@ -1,15 +1,24 @@
-import manager.FileBackedTasksManager;
-import manager.HistoryManager;
-import manager.InMemoryHistoryManager;
-import manager.InMemoryTaskManager;
+import manager.*;
+import server.HttpTaskServer;
+import server.KVServer;
 import task.Epic;
 import task.SubTask;
 import task.Task;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 
 public class Main {
+
+    public static void main(String[] args) throws IOException {
+        KVServer kvServer = new KVServer();
+        kvServer.start();
+
+        TaskManager manager = Managers.getDefault();
+        HttpTaskServer httpTaskServer = new HttpTaskServer(manager);
+        httpTaskServer.start();
+    }
 
     //public static void main(String[] args) {
         //InMemoryTaskManager taskManager = new InMemoryTaskManager();

@@ -42,6 +42,10 @@ public interface TaskManager {
 
     List<SubTask> getEpicSubtasks(int uniqueId);
 
+    List<Task> getAllTasks();
+
+    void clearAll();
+
     void clearAllTasks(HashMap<Integer, Task> task);
 
     void clearAllSubTasks(HashMap<Integer, SubTask> subTask);

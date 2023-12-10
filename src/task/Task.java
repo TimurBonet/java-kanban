@@ -1,5 +1,6 @@
 package task;
 
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -13,10 +14,20 @@ public class Task {
     protected String status;
     protected int id;
     protected int epicId;
-    protected Duration duration = null;
-    protected LocalDateTime startTime = null;
+    protected Long duration;
+    protected LocalDateTime startTime ;
+    protected LocalDateTime endTime ;
 
     public Task() {
+    }
+
+    public Task(Task task){
+        this.id = task.id;
+        this.name = task.name;
+        this.status = task.status;
+        this.description = task.description;
+        this.duration = task.duration;
+        this.startTime = task.startTime;
     }
 
     public Task(String name, String description, String status, String startTime, long duration) {
@@ -26,24 +37,30 @@ public class Task {
         this.type = TASK.getType();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH-mm_dd.MM.yyyy");
         this.startTime = LocalDateTime.parse(startTime,formatter);
-        this.duration = Duration.ofMinutes(duration);
+        this.duration = duration;
     }
 
     public LocalDateTime getStartTime(){
+        if(startTime == null) {
+            return null;
+        }
         return startTime;
     }
 
     public LocalDateTime getEndTime(){
-        return getStartTime().plus(duration);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH-mm_dd.MM.yyyy");
+        if(duration == 0 && startTime == null){
+            return LocalDateTime.parse("00-00_01.01.1970",formatter);
+        }else if(duration == 0){
+            return  startTime;
+        } else {
+            return getStartTime().plus(Duration.ofMinutes(duration));
+        }
     }
 
-    public long getDuration(){
-        try {
-            return duration.toMinutes();
-        }catch (NullPointerException e){
-            e.getMessage();
-        }
-        return 0;
+    public Long getDuration(){
+            return duration;
+
     }
 
     public String getName() {
@@ -86,6 +103,19 @@ public class Task {
         return epicId;
     }
 
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+
     @Override
     public String toString() {
         return "Tasks.Task{" +
@@ -94,7 +124,7 @@ public class Task {
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
                 ", startTime='" + startTime + '\'' +
-                ", duration='" + duration.toMinutes() + '\'' +
+                ", duration='" + duration + '\'' +
                 ", endTime='" + getEndTime() + '\'' +
                 '}' + "\n";
     }

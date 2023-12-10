@@ -84,8 +84,8 @@ public class InMemoryTaskManager implements TaskManager {
         newSubTask.setId(uniqueId);
         subTaskMap.put(uniqueId, newSubTask);
         epicMap.get(epicId).getSubTaskForEpic().add(newSubTask);
-        epicMap.get(epicId).getEpicStartTime();
-        epicMap.get(epicId).epicDuration();
+        epicMap.get(epicId).getStartTime();
+        epicMap.get(epicId).getDuration();
         epicMap.get(epicId).setStatus(getStatus(epicMap.get(epicId).getSubTaskForEpic()));
         assigningId();
     }
@@ -103,7 +103,7 @@ public class InMemoryTaskManager implements TaskManager {
             if (sub.getId() == uniqueId) {
                 int index = epicMap.get(epicId).getSubTaskForEpic().indexOf(sub);
                 epicMap.get(epicId).getSubTaskForEpic().set(index, newSubTask);
-                epicMap.get(epicId).epicDuration();
+                epicMap.get(epicId).getDuration();
                 epicMap.get(epicId).setStatus(getStatus(epicMap.get(epicId).getSubTaskForEpic()));
             }
         }
@@ -113,11 +113,11 @@ public class InMemoryTaskManager implements TaskManager {
     public void createEpic(Epic newEpic) {
         newEpic.setId(uniqueId);
         newEpic.setStatus(getStatus(newEpic.getSubTaskForEpic()));
-        newEpic.getEpicStartTime();
-        newEpic.epicDuration();
+        newEpic.getStartTime();
+        newEpic.getDuration();
         epicMap.put(uniqueId, newEpic);
-        epicMap.get(uniqueId).getEpicStartTime();
-        epicMap.get(uniqueId).epicDuration();
+        /*epicMap.get(uniqueId).getStartTime();
+        epicMap.get(uniqueId).getDuration();*/
         assigningId();
     }
 
@@ -131,7 +131,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         }
         newEpic.setId(uniqueId);
-        newEpic.getEpicStartTime();
+        newEpic.getStartTime();
         newEpic.setStatus(getStatus(newEpic.getSubTaskForEpic()));
         epicMap.put(uniqueId, newEpic);
     }
@@ -141,14 +141,13 @@ public class InMemoryTaskManager implements TaskManager {
         ArrayList<String> subTaskStatuses = new ArrayList<>();
         if(!subTaskForEpic.isEmpty()) {
             int id = subTaskForEpic.get(0).getEpicId();
-            epicMap.get(id).getEpicStartTime();
+            epicMap.get(id).getStartTime();
         }
 
         for (SubTask s : subTaskForEpic) {
             subTaskStatuses.add(s.getStatus());
         }
         if (subTaskStatuses.isEmpty()) {
-
             return "NEW";
         }
         if ((subTaskStatuses.contains("NEW"))
@@ -213,6 +212,14 @@ public class InMemoryTaskManager implements TaskManager {
         return new ArrayList<>(epicMap.values());
     }
 
+    public  ArrayList<Task> getAllTasks (){
+        ArrayList<Task> allTasks = new ArrayList<>();
+        allTasks.addAll(getTaskList());
+        allTasks.addAll(getSubTaskList());
+        allTasks.addAll(getEpicList());
+        return allTasks;
+    }
+
     @Override
     public List<SubTask> getEpicSubtasks(int uniqueId) {
         if (!epicMap.containsKey(uniqueId)) {
@@ -240,6 +247,15 @@ public class InMemoryTaskManager implements TaskManager {
     public void clearAllEpic(HashMap<Integer, Epic> epic) {
         subTaskMap.clear();
         epic.clear();
+    }
+
+    @Override
+    public void clearAll() {
+        taskMap.clear();
+        subTaskMap.clear();
+        epicMap.clear();
+
+        inMemoryHistoryManager.getHistory().clear();
     }
 
     @Override
