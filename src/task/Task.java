@@ -15,13 +15,13 @@ public class Task {
     protected int id;
     protected int epicId;
     protected Long duration;
-    protected LocalDateTime startTime ;
-    protected LocalDateTime endTime ;
+    protected LocalDateTime startTime;
+    protected LocalDateTime endTime;
 
     public Task() {
     }
 
-    public Task(Task task){
+    public Task(Task task) {
         this.id = task.id;
         this.name = task.name;
         this.status = task.status;
@@ -36,30 +36,30 @@ public class Task {
         this.status = status;
         this.type = TASK.getType();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH-mm_dd.MM.yyyy");
-        this.startTime = LocalDateTime.parse(startTime,formatter);
+        this.startTime = LocalDateTime.parse(startTime, formatter);
         this.duration = duration;
     }
 
-    public LocalDateTime getStartTime(){
-        if(startTime == null) {
+    public LocalDateTime getStartTime() {
+        if (startTime == null) {
             return null;
         }
         return startTime;
     }
 
-    public LocalDateTime getEndTime(){
+    public LocalDateTime getEndTime() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH-mm_dd.MM.yyyy");
-        if(duration == 0 && startTime == null){
-            return LocalDateTime.parse("00-00_01.01.1970",formatter);
-        }else if(duration == 0){
-            return  startTime;
+        if (duration == 0 && startTime == null) {
+            return LocalDateTime.parse("00-00_01.01.1970", formatter);
+        } else if (duration == 0) {
+            return startTime;
         } else {
             return getStartTime().plus(Duration.ofMinutes(duration));
         }
     }
 
-    public Long getDuration(){
-            return duration;
+    public Long getDuration() {
+        return duration;
 
     }
 

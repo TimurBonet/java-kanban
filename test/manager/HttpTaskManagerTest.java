@@ -1,10 +1,6 @@
 package manager;
 
-import http.HttpTaskManager;
-import manager.Managers;
-import manager.TaskManagerTest;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import task.Epic;
@@ -15,6 +11,8 @@ import server.KVServer;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -38,8 +36,8 @@ public class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
 
     @Test
     public void taskManagerShouldThrowExceptionWithTwoIntersectionTasks() {
-        Task task = new Task("nt1","dt1","NEW","15-15_15.11.2024", 44);
-        Task task1 = new Task("nt2","dt2","NEW","15-15_15.11.2025", 45);
+        Task task = new Task("nt1", "dt1", "NEW", "15-15_15.11.2024", 44);
+        Task task1 = new Task("nt2", "dt2", "NEW", "15-25_15.11.2024", 45);
 
         task.setDuration(30);
         task1.setDuration(40);
@@ -54,28 +52,32 @@ public class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
             taskManager.createTask(task1);
         });
 
-        assertEquals("exception.IntersectionIntervalException: Пересечение выполнения задач!", e.getMessage());
+        assertEquals("manager.IntersectionIntervalException: Пересечение выполнения задач!", e.getMessage());
     }
 
     @Test
     public void testLoadAndSaveWithThreeTasks() throws IOException, InterruptedException {
-        HttpTaskManager secondTaskManager;
-        Task task = new Task("nt1","dt1","NEW","15-15_15.11.2024", 44);
-        Epic epic = new Epic("ne1","de1");
-        SubTask subtask = new SubTask("nst11","dst11","NEW", epic.getId(),"13-13_13.06.2024", 23);
+        //HttpTaskManager secondTaskManager ;
+        List<Task> tasks = new ArrayList<>();
+        Task task = new Task("nt1", "dt1", "NEW", "15-15_15.11.2024", 44);
+        Epic epic = new Epic("ne1", "de1");
+        SubTask subtask = new SubTask("nst11", "dst11", "NEW", epic.getId(), "13-13_13.06.2024", 23);
+        tasks.add(task);
+        tasks.add(epic);
+        tasks.add(subtask);
         taskManager.createTask(task);
         taskManager.createEpic(epic);
         taskManager.createSubTask(subtask);
 
-        secondTaskManager = taskManager.load("http://localhost:8078");
+        taskManager.load();
 
-        assertEquals(3, secondTaskManager.getAllTasks().size());
-        assertEquals(0, secondTaskManager.getInMemoryHistoryManager().getHistory().size());
+        assertEquals(tasks.size(), taskManager.getAllTasks().size());
+        assertEquals(0, taskManager.getInMemoryHistoryManager().getHistory().size());
     }
 
     @Test
     public void testLoadEmptyData() {
-        taskManager.load("http://localhost:8078");
+        taskManager.load();
 
         assertEquals(0, taskManager.getAllTasks().size());
         assertEquals(0, taskManager.getInMemoryHistoryManager().getHistory().size());
@@ -83,9 +85,9 @@ public class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
 
     @Test
     public void testRemoveAllTasks() {
-        Task task = new Task("nt1","dt1","NEW","15-15_15.11.2024", 44);
-        Epic epic = new Epic("ne1","de1");
-        SubTask subtask = new SubTask("nst11","dst11","NEW", epic.getId(),"13-13_13.06.2024", 23);
+        Task task = new Task("nt1", "dt1", "NEW", "15-15_15.11.2024", 44);
+        Epic epic = new Epic("ne1", "de1");
+        SubTask subtask = new SubTask("nst11", "dst11", "NEW", epic.getId(), "13-13_13.06.2024", 23);
 
         taskManager.createTask(task);
         taskManager.createEpic(epic);

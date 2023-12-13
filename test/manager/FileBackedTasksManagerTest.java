@@ -17,48 +17,49 @@ import java.util.HashMap;
 import java.util.List;
 
 public class FileBackedTasksManagerTest<T extends TaskManager> extends TaskManagerTest<FileBackedTasksManager> {
-    File file ;
+    File file;
     InMemoryHistoryManager inMemoryHistoryManager;
+
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         inMemoryHistoryManager = new InMemoryHistoryManager();
         file = new File("task.csv");
         taskManager = new FileBackedTasksManager(file);
-        task = new Task("nt1","dt1","NEW","15-15_15.11.2024", 44);
+        task = new Task("nt1", "dt1", "NEW", "15-15_15.11.2024", 44);
         taskManager.createTask(task);
-        epic = new Epic("ne1","de1");
+        epic = new Epic("ne1", "de1");
         taskManager.createEpic(epic);
-        subTask = new SubTask("nst11","dst11","NEW", epic.getId(),"13-13_13.06.2024", 23);
+        subTask = new SubTask("nst11", "dst11", "NEW", epic.getId(), "13-13_13.06.2024", 23);
         taskManager.createSubTask(subTask);
     }
 
     @Test
-    void save(){
+    void save() {
         deleteFile();
-        HashMap<Integer,Task> taskMap = new HashMap<>();
-        taskMap.put(task.getId(),task);
-        HashMap<Integer,SubTask> subTaskMap = new HashMap<>();
-        subTaskMap.put(subTask.getId(),subTask);
-        HashMap<Integer,Epic> epicMap = new HashMap<>();
-        epicMap.put(epic.getId(),epic);
-        try (BufferedWriter br = new BufferedWriter(new FileWriter(file))){
+        HashMap<Integer, Task> taskMap = new HashMap<>();
+        taskMap.put(task.getId(), task);
+        HashMap<Integer, SubTask> subTaskMap = new HashMap<>();
+        subTaskMap.put(subTask.getId(), subTask);
+        HashMap<Integer, Epic> epicMap = new HashMap<>();
+        epicMap.put(epic.getId(), epic);
+        try (BufferedWriter br = new BufferedWriter(new FileWriter(file))) {
             String header = "id,type,name,status,description,epic,startTime,duration";
             br.write(header);
             br.newLine();
 
-            for (Integer i : taskMap.keySet()){
+            for (Integer i : taskMap.keySet()) {
                 final Task task = taskMap.get(i);
                 br.write(toString(task));
                 br.newLine();
             }
 
-            for (Integer i : subTaskMap.keySet()){
+            for (Integer i : subTaskMap.keySet()) {
                 final Task task = subTaskMap.get(i);
                 br.write(toString(task));
                 br.newLine();
             }
 
-            for (Integer i : epicMap.keySet()){
+            for (Integer i : epicMap.keySet()) {
                 final Task task = epicMap.get(i);
                 br.write(toString(task));
                 br.newLine();
@@ -74,6 +75,7 @@ public class FileBackedTasksManagerTest<T extends TaskManager> extends TaskManag
         }
         Assertions.assertTrue(file.exists());
     }
+
     public String toString(Task task) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH-mm_dd.MM.yyyy");
         return task.getId() + "," + task.getType() + "," + task.getName() + "," + task.getStatus() + "," +
@@ -236,10 +238,10 @@ public class FileBackedTasksManagerTest<T extends TaskManager> extends TaskManag
         super.getHistory();
     }
 
-    public void deleteFile(){
+    public void deleteFile() {
         try {
             Files.delete(file.toPath());
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

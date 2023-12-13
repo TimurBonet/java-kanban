@@ -15,7 +15,7 @@ public class SubTask extends Task {
         super.epicId = epicId;
         super.type = SUBTASK.getType();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH-mm_dd.MM.yyyy");
-        super.startTime = LocalDateTime.parse(startTime,formatter);
+        super.startTime = LocalDateTime.parse(startTime, formatter);
         super.duration = duration;
     }
 

@@ -1,8 +1,8 @@
 package manager;
 
-public class IntersectionIntervalException  extends  RuntimeException{
+public class IntersectionIntervalException extends RuntimeException {
 
-    public IntersectionIntervalException (String text){
+    public IntersectionIntervalException(String text) {
         super(text);
     }
 }

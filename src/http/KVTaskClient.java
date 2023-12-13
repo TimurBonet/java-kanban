@@ -18,55 +18,53 @@ public class KVTaskClient {
         apiToken = register(url);
     }
 
-    private String register(String url){
-        try{
+    private String register(String url) {
+        try {
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url + "register"))
                     .GET()
                     .build();
-            HttpResponse<String> response = client.send(request,HttpResponse.BodyHandlers.ofString());
-            if(response.statusCode() != 200){
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() != 200) {
                 throw new ManagerSaveException("Невозможно зарегистрировать, код ошибки: " + response.statusCode());
             }
             return response.body();
-        } catch ( InterruptedException | IOException e){
-            e.printStackTrace();
-            throw  new ManagerSaveException("Ошибка");
+        } catch (InterruptedException | IOException e) {
+            throw new ManagerSaveException("Ошибка" + e.getMessage());
         }
     }
 
-    public String load (String key){
-        try{
+    public String load(String key) {
+        try {
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url + "load/" + key + "?API_TOKEN=" + apiToken))
                     .GET()
                     .build();
-            HttpResponse<String> response = client.send(request,HttpResponse.BodyHandlers.ofString());
-            if(response.statusCode() != 200){
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() != 200) {
                 throw new ManagerSaveException("Невозможно зарегистрировать, код ошибки: " + response.statusCode());
             }
             return response.body();
-        } catch ( InterruptedException | IOException e){
-            e.printStackTrace();
-            throw  new ManagerSaveException("Ошибка");
+        } catch (InterruptedException | IOException e) {
+            throw new ManagerSaveException("Ошибка" + e.getMessage());
         }
     }
-    public void put (String key, String value){
-        try{
+
+    public void put(String key, String value) {
+        try {
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url + "save/" + key + "?API_TOKEN=" + apiToken))
                     .POST(HttpRequest.BodyPublishers.ofString(value))
                     .build();
-            HttpResponse<Void> response = client.send(request,HttpResponse.BodyHandlers.discarding());
-            if(response.statusCode() != 200){
+            HttpResponse<Void> response = client.send(request, HttpResponse.BodyHandlers.discarding());
+            if (response.statusCode() != 200) {
                 throw new ManagerSaveException("Невозможно зарегистрировать, код ошибки: " + response.statusCode());
             }
-        } catch ( InterruptedException | IOException e){
-            e.printStackTrace();
-            throw  new ManagerSaveException("Ошибка");
+        } catch (InterruptedException | IOException e) {
+            throw new ManagerSaveException("Ошибка" + e.getMessage());
         }
     }
 }

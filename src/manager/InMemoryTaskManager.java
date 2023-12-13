@@ -83,10 +83,12 @@ public class InMemoryTaskManager implements TaskManager {
         }
         newSubTask.setId(uniqueId);
         subTaskMap.put(uniqueId, newSubTask);
-        epicMap.get(epicId).getSubTaskForEpic().add(newSubTask);
-        epicMap.get(epicId).getStartTime();
-        epicMap.get(epicId).getDuration();
-        epicMap.get(epicId).setStatus(getStatus(epicMap.get(epicId).getSubTaskForEpic()));
+        if (epicMap.get(epicId) != null) {
+            epicMap.get(epicId).getSubTaskForEpic().add(newSubTask);
+            epicMap.get(epicId).getStartTime();
+            epicMap.get(epicId).getDuration();
+            epicMap.get(epicId).setStatus(getStatus(epicMap.get(epicId).getSubTaskForEpic()));
+        }
         assigningId();
     }
 
@@ -139,7 +141,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public String getStatus(List<SubTask> subTaskForEpic) {
         ArrayList<String> subTaskStatuses = new ArrayList<>();
-        if(!subTaskForEpic.isEmpty()) {
+        if (!subTaskForEpic.isEmpty()) {
             int id = subTaskForEpic.get(0).getEpicId();
             epicMap.get(id).getStartTime();
         }
@@ -212,7 +214,7 @@ public class InMemoryTaskManager implements TaskManager {
         return new ArrayList<>(epicMap.values());
     }
 
-    public  ArrayList<Task> getAllTasks (){
+    public ArrayList<Task> getAllTasks() {
         ArrayList<Task> allTasks = new ArrayList<>();
         allTasks.addAll(getTaskList());
         allTasks.addAll(getSubTaskList());

@@ -25,8 +25,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         tasksTreeSet = new TreeSet<>(Comparator.comparing(Task::getStartTime));
     }
 
-    public  FileBackedTasksManager(){
-        tasksTreeSet= new TreeSet<>(Comparator.comparing(Task::getStartTime));
+    public FileBackedTasksManager() {
+        tasksTreeSet = new TreeSet<>(Comparator.comparing(Task::getStartTime));
     }
 
     public void save() {
@@ -116,7 +116,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             case "SUBTASK":
                 fileBackedTasksManager.subTaskMap.put(task.getId(), (SubTask) task);
                 // попробуй обновлять Эпик каждое внесение сабстаска!
-                if (!fileBackedTasksManager.epicMap.isEmpty() && fileBackedTasksManager.epicMap.get(task.getEpicId())!=null ) {
+                if (!fileBackedTasksManager.epicMap.isEmpty() && fileBackedTasksManager.epicMap.get(task.getEpicId()) != null) {
                     fileBackedTasksManager.epicMap.get(task.getEpicId()).getSubTaskForEpic().add((SubTask) task);
                 }
                 break;
@@ -124,8 +124,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 fileBackedTasksManager.epicMap.put(task.getId(), (Epic) task);
                 if (!fileBackedTasksManager.epicMap.isEmpty() && !fileBackedTasksManager.subTaskMap.isEmpty()) {
                     int id = task.getId();
-                    for (SubTask s :  fileBackedTasksManager.subTaskMap.values()) {
-                        if(s.getEpicId() == id) {
+                    for (SubTask s : fileBackedTasksManager.subTaskMap.values()) {
+                        if (s.getEpicId() == id) {
                             fileBackedTasksManager.epicMap.get(id).getSubTaskForEpic().add(s);
                         }
                     }
@@ -212,9 +212,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     public TreeSet<Task> getPrioritizedTasks() {
-            return tasksTreeSet;
+        return tasksTreeSet;
     }
-    public void setPrioritizedTasks(){
+
+    public void setPrioritizedTasks() {
         //TreeSet<Task> allTasks = new TreeSet<>(/*Comparator.comparing(Task::getStartTime)*/);
         for (Task t : taskMap.values()) {
             tasksTreeSet.add(t);
@@ -296,6 +297,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     public void createTask(Task newTask) {
         super.createTask(newTask);
         save();
+        setPrioritizedTasks();
+
+        try {
+            checkIntersection();
+        } catch (IntersectionIntervalException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -314,6 +322,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     public void createSubTask(SubTask newSubTask) {
         super.createSubTask(newSubTask);
         save();
+
+        try {
+            checkIntersection();
+        } catch (IntersectionIntervalException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -326,6 +340,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     public void createEpic(Epic newEpic) {
         super.createEpic(newEpic);
         save();
+
+        try {
+            checkIntersection();
+        } catch (IntersectionIntervalException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

@@ -54,7 +54,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         Node<Task> current = null;
         int previousSize = -1;
 
-        while(arrayTasks.size() != nodes.size() && arrayTasks.size() != previousSize) {
+        while (arrayTasks.size() != nodes.size() && arrayTasks.size() != previousSize) {
             previousSize = arrayTasks.size();
             for (Node<Task> n : nodes) {
                 if (n.prev == current) {

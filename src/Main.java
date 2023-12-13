@@ -21,19 +21,19 @@ public class Main {
     }
 
     //public static void main(String[] args) {
-        //InMemoryTaskManager taskManager = new InMemoryTaskManager();
+    //InMemoryTaskManager taskManager = new InMemoryTaskManager();
         /*taskManager.createTask(new Task("Поездка", "собрать вещи в дорогу", "NEW"));
         taskManager.createTask(
                 new Task("Покупка столика", "Выбрать столик в мебельном", "IN_PROGRESS"));*/
-        //System.out.println("Проверка списка Tasks.Task");
-        //System.out.println(taskManager.getTaskList(taskManager.getTaskMap()));
+    //System.out.println("Проверка списка Tasks.Task");
+    //System.out.println(taskManager.getTaskList(taskManager.getTaskMap()));
 
         /*taskManager.createEpic(
                 new Epic("Переселение", "Собираем вещи, перевозим"));
         taskManager.createEpic(
                 new Epic("Учеба", "Разбираем по винтикам темы"));*/
-        //System.out.println("Проверка списка Tasks.Epic");
-        //System.out.println(taskManager.getEpicList(taskManager.getEpicMap()));
+    //System.out.println("Проверка списка Tasks.Epic");
+    //System.out.println(taskManager.getEpicList(taskManager.getEpicMap()));
 
         /*taskManager.createSubTask(
                 new SubTask("Перевозка вещей", "Собираем вещи, перевозим", "DONE", 2));

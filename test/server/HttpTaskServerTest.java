@@ -16,12 +16,13 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.TreeSet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class HttpTaskServerTest {
+public class HttpTaskServerTest {    // Часть тестов наладил, с оставшимися, нужен совет
 
     private final Gson gson = Managers.getGson();
 
@@ -38,7 +39,7 @@ public class HttpTaskServerTest {
         taskManager = Managers.getDefault();
         httpTaskServer = new HttpTaskServer(taskManager);
         httpClient = HttpClient.newHttpClient();
-        task = new Task("nt1","dt1","NEW","15-15_15.11.2024", 44);
+        task = new Task("nt1", "dt1", "NEW", "15-15_15.11.2024", 44);
 
         httpTaskServer.start();
     }
@@ -105,7 +106,7 @@ public class HttpTaskServerTest {
     }
 
     @Test
-    public void removeTaskById() throws IOException, InterruptedException {
+    public void shouldRemoveTaskByIdOnTheDeleteRequest() throws IOException, InterruptedException {
         taskManager.createTask(task);
         URI url = URI.create("http://localhost:8080/tasks/task/?id=0");
         HttpRequest request = HttpRequest.newBuilder()
@@ -120,7 +121,7 @@ public class HttpTaskServerTest {
     @Test
     public void getSubtaskForEpic() throws IOException, InterruptedException {
         Epic epic = new Epic("Epic", "descr");
-        SubTask subtask = new SubTask("nst11","dst11","NEW", epic.getId(),"13-13_13.06.2024", 23);
+        SubTask subtask = new SubTask("nst11", "dst11", "NEW", epic.getId(), "13-13_13.06.2024", 23);
         taskManager.createEpic(epic);
         taskManager.createSubTask(subtask);
         int epicId = epic.getId();
@@ -137,7 +138,7 @@ public class HttpTaskServerTest {
 
     @Test
     public void getHistory() throws IOException, InterruptedException {
-        Task task1 = new Task("nt2","dt2","NEW","15-15_15.11.2025", 45);
+        Task task1 = new Task("nt2", "dt2", "NEW", "15-15_15.11.2025", 45);
         List<Task> historyList = new ArrayList<>();
         taskManager.createTask(task);
         taskManager.createTask(task1);
@@ -161,8 +162,8 @@ public class HttpTaskServerTest {
 
     @Test
     public void getPrioritizedTasks() throws IOException, InterruptedException {
-        TreeSet<Task> treeSet = new TreeSet<>();
-        Task task1 = new Task("nt2","dt2","NEW","15-15_15.11.2025", 45);
+        TreeSet<Task> treeSet = new TreeSet<>(Comparator.comparing(Task::getStartTime));
+        Task task1 = new Task("nt2", "dt2", "NEW", "15-15_15.11.2025", 45);
         taskManager.createTask(task);
         taskManager.createTask(task1);
         treeSet.add(task);

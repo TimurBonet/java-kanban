@@ -1,9 +1,10 @@
 package manager;
 
 public enum TasksTypes {
-    TASK ("TASK"),
-    SUBTASK ("SUBTASK"),
-    EPIC ("EPIC"),;
+    TASK("TASK"),
+    SUBTASK("SUBTASK"),
+    EPIC("EPIC"),
+    ;
 
     private String type;
 

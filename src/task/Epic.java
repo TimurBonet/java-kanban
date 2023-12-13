@@ -9,8 +9,7 @@ import java.util.List;
 import static manager.TasksTypes.EPIC;
 
 public class Epic extends Task {
-    protected List<SubTask> subTaskForEpic = new ArrayList<>(); // если поле static то startTime 1го сабтаска отображается, но у всех.
-                          // в противном случае не вносятся изменения в startTime и Duration, а дублировать из в Epic, думаю, неверно
+    protected List<SubTask> subTaskForEpic = new ArrayList<>();
 
     public Epic(String name, String description) {
         super.name = name;
@@ -24,28 +23,31 @@ public class Epic extends Task {
     public List<SubTask> getSubTaskForEpic() {
         return this.subTaskForEpic;
     }
+
     @Override
-    public Long getDuration(){
+    public Long getDuration() {
         long i = 0;
-        if(subTaskForEpic.isEmpty()){
+        if (subTaskForEpic.isEmpty()) {
             return i;
         }
-        for (SubTask s: subTaskForEpic ) {
-            i+=s.getDuration();
+        for (SubTask s : subTaskForEpic) {
+            i += s.getDuration();
         }
-        return  i;
+        return i;
     }
+
     @Override
-    public void setStartTime(LocalDateTime startTime){
+    public void setStartTime(LocalDateTime startTime) {
         super.startTime = startTime;
     }
+
     @Override
-    public LocalDateTime getStartTime(){
+    public LocalDateTime getStartTime() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH-mm_dd.MM.yyyy");
         if (!this.subTaskForEpic.isEmpty()) {
             startTime = this.subTaskForEpic.get(0).getStartTime();
-        }else {
-            return LocalDateTime.parse("00-00_01.01.1970",formatter);
+        } else {
+            return LocalDateTime.parse("00-00_01.01.1970", formatter);
         }
         return startTime;
     }
@@ -54,6 +56,7 @@ public class Epic extends Task {
     public LocalDateTime getEndTime() {
         return super.getEndTime();
     }
+
     public void setEndTime() {
         super.endTime = super.startTime.plus(Duration.ofMinutes(super.duration));
     }

@@ -22,8 +22,8 @@ class EpicTest {
     public void allEpicSubTasksStatusNew() {
         Epic ep = new Epic("new", "descriprion");
         List<SubTask> expected = new ArrayList<>();
-        expected.add(new SubTask("n1", "d1", "NEW", ep.getId(),"11-11_11.12.2023", 20));
-        expected.add(new SubTask("n2", "d2", "NEW", ep.getId(),"11-11_11.12.2023", 20));
+        expected.add(new SubTask("n1", "d1", "NEW", ep.getId(), "11-11_11.12.2023", 20));
+        expected.add(new SubTask("n2", "d2", "NEW", ep.getId(), "11-11_11.12.2023", 20));
         String exp = "NEW";
         for (SubTask s : expected) {
             if (!s.status.equals(exp)) {
@@ -38,8 +38,8 @@ class EpicTest {
     public void allEpicSubTasksStatusDone() {
         Epic ep = new Epic("new", "descriprion");
         List<SubTask> expected = new ArrayList<>();
-        expected.add(new SubTask("n1", "d1", "DONE", ep.getId(),"22-22_22.12.2023", 25));
-        expected.add(new SubTask("n2", "d2", "DONE", ep.getId(),"22-22_22.12.2023", 25));
+        expected.add(new SubTask("n1", "d1", "DONE", ep.getId(), "22-22_22.12.2023", 25));
+        expected.add(new SubTask("n2", "d2", "DONE", ep.getId(), "22-22_22.12.2023", 25));
         String exp = "DONE";
         for (SubTask s : expected) {
             if (!s.status.equals(exp)) {
@@ -56,8 +56,8 @@ class EpicTest {
         Epic ep = new Epic("new", "descriprion");
 
         List<SubTask> expected = new ArrayList<>();
-        expected.add(new SubTask("n1", "d1", "NEW", ep.getId(),"22-22_22.12.2023", 25));
-        expected.add(new SubTask("n2", "d2", "DONE", ep.getId(),"22-22_22.12.2023", 25));
+        expected.add(new SubTask("n1", "d1", "NEW", ep.getId(), "22-22_22.12.2023", 25));
+        expected.add(new SubTask("n2", "d2", "DONE", ep.getId(), "22-22_22.12.2023", 25));
 
         String exp = "ERROR";
         int counter1 = 0;
@@ -81,8 +81,8 @@ class EpicTest {
         Epic ep = new Epic("new", "descriprion");
 
         List<SubTask> expected = new ArrayList<>();
-        expected.add(new SubTask("n1", "d1", "IN_PROGRESS", ep.getId(),"08-09_09.05.2024", 56));
-        expected.add(new SubTask("n2", "d2", "IN_PROGRESS", ep.getId(),"09-29_09.07.2024", 26));
+        expected.add(new SubTask("n1", "d1", "IN_PROGRESS", ep.getId(), "08-09_09.05.2024", 56));
+        expected.add(new SubTask("n2", "d2", "IN_PROGRESS", ep.getId(), "09-29_09.07.2024", 26));
 
         String exp = "IN_PROGRESS";
         for (SubTask s : expected) {

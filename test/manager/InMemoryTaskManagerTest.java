@@ -9,13 +9,13 @@ import task.Task;
 
 public class InMemoryTaskManagerTest<T extends TaskManager> extends TaskManagerTest<InMemoryTaskManager> {
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         taskManager = new InMemoryTaskManager();
-        task = new Task("nt1","dt1","NEW","08-09_09.05.2024", 56);
+        task = new Task("nt1", "dt1", "NEW", "08-09_09.05.2024", 56);
         taskManager.createTask(task);
-        epic = new Epic("ne1","de1");
+        epic = new Epic("ne1", "de1");
         taskManager.createEpic(epic);
-        subTask = new SubTask("nst11","dst11","NEW", epic.getId(),"23-23_23.12.2023", 12);
+        subTask = new SubTask("nst11", "dst11", "NEW", epic.getId(), "23-23_23.12.2023", 12);
         taskManager.createSubTask(subTask);
     }
 

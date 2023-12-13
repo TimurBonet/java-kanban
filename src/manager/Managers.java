@@ -3,17 +3,15 @@ package manager;
 import adapter.LocalDateTimeAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import http.HttpTaskManager;
 import server.KVServer;
 import task.Task;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
-public final class Managers <T extends Task>{
+public final class Managers<T extends Task> {
 
-    static HistoryManager getDefaultHistory(){
+    static HistoryManager getDefaultHistory() {
         return new InMemoryHistoryManager();
     }
 
@@ -21,20 +19,21 @@ public final class Managers <T extends Task>{
         return new FileBackedTasksManager(new File("tasks.csv"));
     }*/
 
-   public static TaskManager getDefault(){
+    public static TaskManager getDefault() {
         return new HttpTaskManager("http://localhost:8078/");
     }
 
-    public static KVServer getDefaultKVServer() throws IOException{
-        final  KVServer kvServer = new KVServer();
+    public static KVServer getDefaultKVServer() throws IOException {
+        final KVServer kvServer = new KVServer();
         kvServer.start();
-        return  kvServer;
+        return kvServer;
     }
 
 
-    public static Gson getGson(){
+    public static Gson getGson() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter());
-        return gsonBuilder.create();
+        Gson gson = gsonBuilder.create();
+        return gson;
     }
 }

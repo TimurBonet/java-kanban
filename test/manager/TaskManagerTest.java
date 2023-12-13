@@ -12,7 +12,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public abstract class TaskManagerTest <T extends TaskManager>{
+public abstract class TaskManagerTest<T extends TaskManager> {
     protected T taskManager;
     protected Task task;
     protected Epic epic;
@@ -20,34 +20,34 @@ public abstract class TaskManagerTest <T extends TaskManager>{
 
     @Test
     void createTask() {
-            final int taskId = task.getId();
+        final int taskId = task.getId();
 
-            final Task savedTask = taskManager.getTaskById(taskId);
+        final Task savedTask = taskManager.getTaskById(taskId);
 
-            assertNotNull(savedTask, "Задача не найдена.");
-            assertEquals(task, savedTask, "Задачи не совпадают.");
+        assertNotNull(savedTask, "Задача не найдена.");
+        assertEquals(task, savedTask, "Задачи не совпадают.");
 
-            final List<Task> tasks = taskManager.getTaskList();
+        final List<Task> tasks = taskManager.getTaskList();
 
-            assertNotNull(tasks, "Задачи на возвращаются.");
-            assertEquals(1, tasks.size(), "Неверное количество задач.");
-            assertEquals(task, tasks.get(0), "Задачи не совпадают.");
+        assertNotNull(tasks, "Задачи на возвращаются.");
+        assertEquals(1, tasks.size(), "Неверное количество задач.");
+        assertEquals(task, tasks.get(0), "Задачи не совпадают.");
     }
 
     @Test
     void setStatus() {
         task.setStatus("IN_PROGRESS");
-        Assertions.assertEquals("IN_PROGRESS",task.getStatus());
+        Assertions.assertEquals("IN_PROGRESS", task.getStatus());
     }
 
     @Test
     void updateTask() {
         final int id = task.getId();
-        Task newTask = new Task("n2","d2","IN_PROGRESS","08-33_09.05.2024", 56);
+        Task newTask = new Task("n2", "d2", "IN_PROGRESS", "08-33_09.05.2024", 56);
         newTask.setId(id);
         taskManager.updateTask(newTask);
         final List<Task> tasks = taskManager.getTaskList();
-        Assertions.assertEquals(newTask,tasks.get(0), "Задачи не совпадают.");
+        Assertions.assertEquals(newTask, tasks.get(0), "Задачи не совпадают.");
         assertNotNull(newTask, "Задача не найдена.");
         assertEquals(1, tasks.size(), "Неверное количество задач.");
 
@@ -73,7 +73,7 @@ public abstract class TaskManagerTest <T extends TaskManager>{
     void updateSubTask() {
         final int id = subTask.getId();
 
-        SubTask subTask1 = new SubTask("n2","d2","IN_PROGRESS",subTask.getEpicId(),"17-18_19.12.2023", 21);
+        SubTask subTask1 = new SubTask("n2", "d2", "IN_PROGRESS", subTask.getEpicId(), "17-18_19.12.2023", 21);
 
         subTask1.setId(id);
         taskManager.updateSubTask(subTask1);
@@ -106,13 +106,13 @@ public abstract class TaskManagerTest <T extends TaskManager>{
     @Test
     void updateEpic() {
         final int id = epic.getId();
-        Epic newEpic = new Epic("n2","d2");
+        Epic newEpic = new Epic("n2", "d2");
         newEpic.setId(id);
 
         taskManager.updateEpic(newEpic);
         final List<Epic> epics = taskManager.getEpicList();
 
-        Assertions.assertEquals(newEpic,epics.get(0), "Задачи не совпадают.");
+        Assertions.assertEquals(newEpic, epics.get(0), "Задачи не совпадают.");
 
         assertNotNull(newEpic, "Задачи на возвращаются.");
         assertEquals(1, epics.size(), "Неверное количество задач.");
@@ -122,9 +122,9 @@ public abstract class TaskManagerTest <T extends TaskManager>{
     @Test
     void getStatus() {
         final List<SubTask> subTasks = new ArrayList<>();
-        SubTask subTask1 = new SubTask("n21","d21","NEW",0,"17-15_13.12.2023", 21);
-        SubTask subTask2 = new SubTask("n22","d22","NEW",0,"17-12_11.12.2023", 23);
-        SubTask subTask3 = new SubTask("n23","d23","IN_PROGRESS",0,"17-21_13.12.2023", 24);
+        SubTask subTask1 = new SubTask("n21", "d21", "NEW", 0, "17-15_13.12.2023", 21);
+        SubTask subTask2 = new SubTask("n22", "d22", "NEW", 0, "17-12_11.12.2023", 23);
+        SubTask subTask3 = new SubTask("n23", "d23", "IN_PROGRESS", 0, "17-21_13.12.2023", 24);
         subTasks.add(subTask1);
         subTasks.add(subTask2);
         subTasks.add(subTask3);
@@ -147,13 +147,13 @@ public abstract class TaskManagerTest <T extends TaskManager>{
         } else {
             status = "IN_PROGRESS";
         }
-        Assertions.assertEquals("IN_PROGRESS",status);
+        Assertions.assertEquals("IN_PROGRESS", status);
     }
 
     @Test
     void getEpicById() {
-        HashMap<Integer,Epic> epicMap = new HashMap<>();
-        epicMap.put(0,epic);
+        HashMap<Integer, Epic> epicMap = new HashMap<>();
+        epicMap.put(0, epic);
         final int id = 0;
         if (!epicMap.containsKey(id)) {
             System.out.println("Отсутствует Эпик - задача с таким ID.");
@@ -165,22 +165,22 @@ public abstract class TaskManagerTest <T extends TaskManager>{
 
     @Test
     void getTaskById() {
-        HashMap<Integer,Task> taskMap = new HashMap<>();
+        HashMap<Integer, Task> taskMap = new HashMap<>();
         final int id = 0;
-        taskMap.put(0,task);
+        taskMap.put(0, task);
         if (!taskMap.containsKey(id)) {
             System.out.println("Отсутствует стандартная задача с таким ID.");
         }
         Task loclTask = taskMap.get(id);
 
-        Assertions.assertEquals(task,loclTask);
+        Assertions.assertEquals(task, loclTask);
     }
 
     @Test
     void getSubTaskById() {
-        HashMap<Integer,SubTask> subTaskMap = new HashMap<>();
+        HashMap<Integer, SubTask> subTaskMap = new HashMap<>();
         final int id = 0;
-        subTaskMap.put(0,subTask);
+        subTaskMap.put(0, subTask);
         if (!subTaskMap.containsKey(id)) {
             System.out.println("Отсутствует субзадача с таким ID.");
         }
@@ -191,8 +191,8 @@ public abstract class TaskManagerTest <T extends TaskManager>{
 
     @Test
     void getTaskList() {
-        HashMap<Integer,Task> taskMap = new HashMap<>();
-        taskMap.put(0,task);
+        HashMap<Integer, Task> taskMap = new HashMap<>();
+        taskMap.put(0, task);
 
         final List<Task> savedTasks = new ArrayList<>(taskMap.values());
 
@@ -203,10 +203,10 @@ public abstract class TaskManagerTest <T extends TaskManager>{
 
     @Test
     void getSubTaskList() {
-        HashMap<Integer,SubTask> subTaskMap = new HashMap<>();
-        subTaskMap.put(0,subTask);
+        HashMap<Integer, SubTask> subTaskMap = new HashMap<>();
+        subTaskMap.put(0, subTask);
 
-        final List<SubTask> savedSubTasks =  new ArrayList<>(subTaskMap.values());
+        final List<SubTask> savedSubTasks = new ArrayList<>(subTaskMap.values());
 
         assertNotNull(savedSubTasks, "Задачи на возвращаются.");
         assertEquals(1, savedSubTasks.size(), "Неверное количество задач.");
@@ -215,10 +215,10 @@ public abstract class TaskManagerTest <T extends TaskManager>{
 
     @Test
     void getEpicList() {
-        HashMap<Integer,Epic> epicMap = new HashMap<>();
-        epicMap.put(0,epic);
+        HashMap<Integer, Epic> epicMap = new HashMap<>();
+        epicMap.put(0, epic);
 
-        final List<Task> savedEpics =  new ArrayList<>(epicMap.values());
+        final List<Task> savedEpics = new ArrayList<>(epicMap.values());
 
         assertNotNull(savedEpics, "Задачи на возвращаются.");
         assertEquals(1, savedEpics.size(), "Неверное количество задач.");
@@ -228,9 +228,9 @@ public abstract class TaskManagerTest <T extends TaskManager>{
     @Test
     void getEpicSubtasks() {
         final List<SubTask> subTasks = new ArrayList<>();
-        subTasks.add(0,subTask);
-        HashMap<Integer,Epic> epicMap = new HashMap<>();
-        epicMap.put(0,epic);
+        subTasks.add(0, subTask);
+        HashMap<Integer, Epic> epicMap = new HashMap<>();
+        epicMap.put(0, epic);
         List<SubTask> epicSubTasks = epicMap.get(0).getSubTaskForEpic();
 
         assertNotNull(epicSubTasks, "Задачи на возвращаются.");
@@ -241,60 +241,60 @@ public abstract class TaskManagerTest <T extends TaskManager>{
 
     @Test
     void clearAllTasks() {
-        HashMap<Integer,Task>  taskMap = new HashMap<>();
-        taskMap.put(task.getId(),task);
+        HashMap<Integer, Task> taskMap = new HashMap<>();
+        taskMap.put(task.getId(), task);
         taskManager.clearAllTasks(taskMap);
-        Assertions.assertEquals(0,taskMap.size(), "HashMap Tasks не пуста");
+        Assertions.assertEquals(0, taskMap.size(), "HashMap Tasks не пуста");
     }
 
     @Test
     void clearAllSubTasks() {
-        HashMap<Integer,SubTask>  subTaskMap = new HashMap<>();
-        subTaskMap.put(subTask.getId(),subTask);
+        HashMap<Integer, SubTask> subTaskMap = new HashMap<>();
+        subTaskMap.put(subTask.getId(), subTask);
         taskManager.clearAllSubTasks(subTaskMap);
-        Assertions.assertEquals(0,subTaskMap.size(), "HashMap SubTasks не пуста");
+        Assertions.assertEquals(0, subTaskMap.size(), "HashMap SubTasks не пуста");
     }
 
     @Test
     void clearAllEpic() {
-        HashMap<Integer,Epic>  epicMap = new HashMap<>();
-        epicMap.put(epic.getId(),epic);
+        HashMap<Integer, Epic> epicMap = new HashMap<>();
+        epicMap.put(epic.getId(), epic);
         taskManager.clearAllEpic(epicMap);
-        Assertions.assertEquals(0,epicMap.size(), "HashMap Epics не пуста");
+        Assertions.assertEquals(0, epicMap.size(), "HashMap Epics не пуста");
     }
 
     @Test
     void clearTaskById() {
-        HashMap<Integer,Task>  taskMap = new HashMap<>();
-        taskMap.put(task.getId(),task);
+        HashMap<Integer, Task> taskMap = new HashMap<>();
+        taskMap.put(task.getId(), task);
         final int id = task.getId();
         taskMap.remove(id);
-        Assertions.assertEquals(0,taskMap.size(), "Некорректный размер ожидаемой/полученной HashMap");
+        Assertions.assertEquals(0, taskMap.size(), "Некорректный размер ожидаемой/полученной HashMap");
 
     }
 
     @Test
     void clearSubTaskById() {
-        HashMap<Integer,SubTask>  subTaskMap = new HashMap<>();
-        subTaskMap.put(subTask.getId(),subTask);
+        HashMap<Integer, SubTask> subTaskMap = new HashMap<>();
+        subTaskMap.put(subTask.getId(), subTask);
         final int id = subTask.getId();
         subTaskMap.remove(id);
-        Assertions.assertEquals(0,subTaskMap.size(), "Некорректный размер ожидаемой/полученной HashMap");
+        Assertions.assertEquals(0, subTaskMap.size(), "Некорректный размер ожидаемой/полученной HashMap");
     }
 
     @Test
     void clearEpicById() {
-        HashMap<Integer,Epic>  epicMap = new HashMap<>();
-        epicMap.put(epic.getId(),epic);
+        HashMap<Integer, Epic> epicMap = new HashMap<>();
+        epicMap.put(epic.getId(), epic);
         final int id = epic.getId();
         epicMap.remove(id);
-        Assertions.assertEquals(0,epicMap.size(), "Некорректный размер ожидаемой/полученной HashMap");
+        Assertions.assertEquals(0, epicMap.size(), "Некорректный размер ожидаемой/полученной HashMap");
     }
 
     @Test
     void getHistory() {
         final List<Task> history = new ArrayList<>();
-        Task newTask = new Task("n2","d2","IN_PROGRESS","08-33_09.05.2024", 56);
+        Task newTask = new Task("n2", "d2", "IN_PROGRESS", "08-33_09.05.2024", 56);
         history.add(newTask);
         List<Task> expected = List.of(newTask);
 
