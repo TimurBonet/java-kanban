@@ -14,6 +14,7 @@ import java.lang.String;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Stream;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
     private File file = null;
@@ -51,7 +52,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    static FileBackedTasksManager loadFromFile(File file) {
+    static FileBackedTasksManager load(File file) {
         FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(file);
         if (file.exists()) {
             try (BufferedReader csvReader = new BufferedReader(new FileReader(file))) {
@@ -216,18 +217,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     public void setPrioritizedTasks() {
-        //TreeSet<Task> allTasks = new TreeSet<>(/*Comparator.comparing(Task::getStartTime)*/);
-        for (Task t : taskMap.values()) {
-            tasksTreeSet.add(t);
-        }
-        for (Task t : subTaskMap.values()) {
-            tasksTreeSet.add(t);
-        }
-        for (Task t : epicMap.values()) {
-            tasksTreeSet.add(t);
-        }
-        tasksTreeSet.stream().sorted();
-
+        Stream.of(taskMap.values(),subTaskMap.values(),epicMap.values())
+                .flatMap(Collection::stream)
+                .forEach(tasksTreeSet::add);
     }
 
     protected void checkIntersection() throws IntersectionIntervalException {
@@ -466,7 +458,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
 
         System.out.println(fileBackedTasksManager.inMemoryHistoryManager);
-        FileBackedTasksManager fileBackedTasksManager2 = loadFromFile(file);
+        FileBackedTasksManager fileBackedTasksManager2 = load(file);
         // System.out.println(fileBackedTasksManager2.getTaskList());
         // System.out.println(fileBackedTasksManager2.getSubTaskList()); // здесь такой сложный метод из-за того что inMemoryTaskManager не static
         // конструктор public List<Task> getTaskList(HashMap<Integer, Task> task) {return new ArrayList<>(task.values());}  находится в InMemoryTaskManager

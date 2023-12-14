@@ -1,6 +1,8 @@
 package server;
 
+import adapter.LocalDateTimeAdapter;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import manager.Managers;
 import manager.TaskManager;
 import org.junit.jupiter.api.AfterEach;
@@ -15,6 +17,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -22,14 +25,16 @@ import java.util.TreeSet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class HttpTaskServerTest {    // Часть тестов наладил, с оставшимися, нужен совет
+public class HttpTaskServerTest {
 
-    private final Gson gson = Managers.getGson();
+    private final Gson gson = new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter()).create();
 
     private HttpTaskServer httpTaskServer;
     private TaskManager taskManager;
     private HttpClient httpClient;
     private Task task;
+    private Epic epic;
+    private SubTask subTask;
     private KVServer kvServer;
 
     @BeforeEach
@@ -40,8 +45,10 @@ public class HttpTaskServerTest {    // Часть тестов наладил, 
         httpTaskServer = new HttpTaskServer(taskManager);
         httpClient = HttpClient.newHttpClient();
         task = new Task("nt1", "dt1", "NEW", "15-15_15.11.2024", 44);
-
+        epic = new Epic("ne1", "de1");
+        subTask = new SubTask("nst11", "dst11", "NEW", epic.getId(), "13-13_13.06.2024", 23);
         httpTaskServer.start();
+        taskManager.getAllTasks();
     }
 
     @AfterEach
@@ -95,7 +102,8 @@ public class HttpTaskServerTest {    // Часть тестов наладил, 
     @Test
     public void getTaskById() throws IOException, InterruptedException {
         taskManager.createTask(task);
-        URI url = URI.create("http://localhost:8080/tasks/task/?id=1");
+        int id = taskManager.getTaskList().get(0).getId();
+        URI url = URI.create("http://localhost:8080/tasks/task/?id="+id);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(url)
                 .GET()
@@ -120,10 +128,9 @@ public class HttpTaskServerTest {    // Часть тестов наладил, 
 
     @Test
     public void getSubtaskForEpic() throws IOException, InterruptedException {
-        Epic epic = new Epic("Epic", "descr");
-        SubTask subtask = new SubTask("nst11", "dst11", "NEW", epic.getId(), "13-13_13.06.2024", 23);
+
         taskManager.createEpic(epic);
-        taskManager.createSubTask(subtask);
+        taskManager.createSubTask(subTask);
         int epicId = epic.getId();
 
         URI url = URI.create("http://localhost:8080/tasks/subtask/epic/?id=" + epicId);

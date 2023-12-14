@@ -20,7 +20,7 @@ public final class Managers<T extends Task> {
     }*/
 
     public static TaskManager getDefault() {
-        return new HttpTaskManager("http://localhost:8078/");
+        return new HttpTaskManager("http://localhost:8078");
     }
 
     public static KVServer getDefaultKVServer() throws IOException {
@@ -33,7 +33,6 @@ public final class Managers<T extends Task> {
     public static Gson getGson() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter());
-        Gson gson = gsonBuilder.create();
-        return gson;
+        return gsonBuilder.create();
     }
 }

@@ -2,11 +2,13 @@
 package manager;
 
 import com.google.gson.*;
+import com.google.gson.internal.bind.util.ISO8601Utils;
 import http.KVTaskClient;
 import task.Epic;
 import task.SubTask;
 import task.Task;
 
+import javax.imageio.IIOException;
 import java.util.ArrayList;
 
 
@@ -19,10 +21,9 @@ public class HttpTaskManager extends FileBackedTasksManager {
         this.url = url;
         client = new KVTaskClient(url);
         gson = Managers.getGson();
-
     }
 
-    public void load() {
+    public HttpTaskManager load() {
         HttpTaskManager httpTaskManager;
 
         httpTaskManager = new HttpTaskManager(url);
@@ -51,9 +52,10 @@ public class HttpTaskManager extends FileBackedTasksManager {
             generateHistoryFromJson(httpTaskManager, jsonHistory);
             setPrioritizedTasks();
         }
+        return httpTaskManager;
     }
 
-    public void generateHistoryFromJson(HttpTaskManager httpTaskManager, JsonElement jsonHistory) {
+    private void generateHistoryFromJson(HttpTaskManager httpTaskManager, JsonElement jsonHistory) {
         String[] historyTasks = jsonHistory.getAsString().split(",");
 
         if (jsonHistory.isJsonNull()) {

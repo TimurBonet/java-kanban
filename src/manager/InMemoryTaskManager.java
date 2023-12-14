@@ -6,6 +6,7 @@ import task.Epic;
 import task.TaskStatus;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -219,6 +220,10 @@ public class InMemoryTaskManager implements TaskManager {
         allTasks.addAll(getTaskList());
         allTasks.addAll(getSubTaskList());
         allTasks.addAll(getEpicList());
+        //inMemoryHistoryManager.Collection(allTasks);
+        for (Task t: allTasks){
+            inMemoryHistoryManager.add(t);
+        }
         return allTasks;
     }
 
