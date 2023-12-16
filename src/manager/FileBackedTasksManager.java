@@ -217,7 +217,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     public void setPrioritizedTasks() {
-        Stream.of(taskMap.values(),subTaskMap.values(),epicMap.values())
+        Stream.of(taskMap.values(), subTaskMap.values(), epicMap.values())
                 .flatMap(Collection::stream)
                 .forEach(tasksTreeSet::add);
     }

@@ -46,7 +46,6 @@ public class HttpTaskServer {
     public void start() {
         System.out.println("Запускаем сервер на порту " + PORT);
         System.out.println("Открой в браузере http://localhost:" + PORT + "/tasks");
-        //System.out.println("API_TOKEN: " + apiToken);
         server.start();
     }
 
@@ -67,8 +66,8 @@ public class HttpTaskServer {
     }
 
 
-    private void handleTasks(HttpExchange httpExchange) {    // Тут если честно не могу сообразить как метод уменьшить
-        try {                                                // если только каждый case вынести в отдельный метод
+    private void handleTasks(HttpExchange httpExchange) {
+        try {
             String path = httpExchange.getRequestURI().getPath();
             String requestMethod = httpExchange.getRequestMethod();
             String query = httpExchange.getRequestURI().getQuery();
@@ -98,32 +97,25 @@ public class HttpTaskServer {
     }
 
     private void getHandle(HttpExchange httpExchange, String query, String path) throws IOException {
-        if (query == null) {
-            if ((Pattern.matches("^/tasks/task/$", path))
-                    || (Pattern.matches("^/tasks/subtask/$", path))
-                    || (Pattern.matches("^/tasks/epic/$", path))) {
-                String response = gson.toJson(taskManager.getAllTasks());
-                sendText(httpExchange, response);
-                //break;
-                return;
-            }
+        if ((Pattern.matches("^/tasks/task/$", path))
+                || (Pattern.matches("^/tasks/subtask/$", path))
+                || (Pattern.matches("^/tasks/epic/$", path))) {
+            String response = gson.toJson(taskManager.getAllTasks());
+            sendText(httpExchange, response);
+            //break;
+            return;
+        }
+        if (query != null) {
+            if (Pattern.matches("^/tasks/subtask/epic/$", path)) {
+                int id = parsePathId(query);
 
-            if (Pattern.matches("^/tasks/$", path)) {
-                FileBackedTasksManager fileBackedTasksManager = (FileBackedTasksManager) taskManager;
-                String response = gson.toJson(fileBackedTasksManager.getPrioritizedTasks());
-                sendText(httpExchange, response);
-                //break;
-                return;
+                if (id != -1) {
+                    String response = gson.toJson(taskManager.getEpicSubtasks(id));
+                    sendText(httpExchange, response);
+                    //break;
+                    return;
+                }
             }
-
-            if (Pattern.matches("^/tasks/history$", path)) {
-                FileBackedTasksManager fileBackedTasksManager = (FileBackedTasksManager) taskManager;
-                String response = gson.toJson(fileBackedTasksManager.getInMemoryHistoryManager().getHistory());
-                sendText(httpExchange, response);
-                //break;
-                return;
-            }
-        } else {
             if (Pattern.matches("^/tasks/task/$", path)) {
                 int id = parsePathId(query);
 
@@ -133,6 +125,21 @@ public class HttpTaskServer {
                     //break;
                     return;
                 }
+            }
+        } else {
+            if (Pattern.matches("^/tasks/$", path)) {
+                FileBackedTasksManager fileBackedTasksManager = (FileBackedTasksManager) taskManager;
+                String response = gson.toJson(fileBackedTasksManager.getPrioritizedTasks());
+                sendText(httpExchange, response);
+                //break;
+                return;
+            }
+            if (Pattern.matches("^/tasks/history$", path)) {
+                FileBackedTasksManager fileBackedTasksManager = (FileBackedTasksManager) taskManager;
+                String response = gson.toJson(fileBackedTasksManager.getInMemoryHistoryManager().getHistory());
+                sendText(httpExchange, response);
+                //break;
+                return;
             }
 
             if (Pattern.matches("^/tasks/epic/$", path)) {
@@ -157,10 +164,7 @@ public class HttpTaskServer {
                 }
             }
         }
-
         httpExchange.sendResponseHeaders(405, 0);
-        //break;
-        return;
     }
 
     private void postHandle(HttpExchange httpExchange, String query, String path) throws IOException {
@@ -270,7 +274,6 @@ public class HttpTaskServer {
             }
         }
     }
-
 
     private int parsePathId(String path) {
         try {

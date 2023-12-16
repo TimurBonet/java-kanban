@@ -56,17 +56,19 @@ public class HttpTaskManager extends FileBackedTasksManager {
     }
 
     private void generateHistoryFromJson(HttpTaskManager httpTaskManager, JsonElement jsonHistory) {
+        if (jsonHistory.isJsonNull()) {
+            System.out.println("История пуста");
+            return;
+        }
         String[] historyTasks = jsonHistory.getAsString().split(",");
 
-        if (jsonHistory.isJsonNull()) {
-            for (String historyTask : historyTasks) {
-                Task task = httpTaskManager.getTaskById((Integer.parseInt(historyTask)));
+        for (String historyTask : historyTasks) {
+            Task task = httpTaskManager.getTaskById((Integer.parseInt(historyTask)));
 
-                if (task.getType().equals("EPIC")) {
-                    Epic ep = (Epic) task;
-                    ep.setStatus(ep.getStatus());
-                    ep.setEndTime();
-                }
+            if (task.getType().equals("EPIC")) {
+                Epic ep = (Epic) task;
+                ep.setStatus(ep.getStatus());
+                ep.setEndTime();
             }
         }
     }

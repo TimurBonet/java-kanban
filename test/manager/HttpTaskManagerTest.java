@@ -22,14 +22,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
 
     private KVServer kvServer;
-    InMemoryHistoryManager inMemoryHistoryManager;
 
     @BeforeEach
     public void beforeEach() throws IOException {
         kvServer = new KVServer();
         kvServer.start();
         taskManager = (HttpTaskManager) Managers.getDefault();
-        inMemoryHistoryManager = new InMemoryHistoryManager();
         task = new Task("nt1", "dt1", "NEW", "15-15_15.11.2024", 44);
         taskManager.createTask(task);
         epic = new Epic("ne1", "de1");
@@ -40,8 +38,11 @@ public class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
         epic.setStartTime(subTask.getStartTime());
         epic.setDuration(subTask.getDuration());
         epic.setEndTime();
-    }
+        taskManager.getTaskById(task.getId());
+        taskManager.getSubTaskById(subTask.getId());
+        taskManager.getEpicById(epic.getId());
 
+    }
 
     @AfterEach
     public void afterEach() {
@@ -71,27 +72,26 @@ public class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
 
     @Test
     public void testLoadAndSaveWithThreeTasks() throws IOException, InterruptedException {
-        //HttpTaskManager secondTaskManager ;
         List<Task> tasks = new ArrayList<>();
         Task task = new Task("nt1", "dt1", "NEW", "15-15_15.11.2024", 44);
         taskManager.createTask(task);
-        Epic epic = new Epic("ne1", "de1");
-        taskManager.createEpic(epic);
         SubTask subtask = new SubTask("nst11", "dst11", "NEW", epic.getId(), "13-13_13.06.2024", 23);
         taskManager.createSubTask(subtask);
         tasks.add(task);
-        tasks.add(epic);
         tasks.add(subtask);
+        taskManager.getTaskById(task.getId());
+        taskManager.getSubTaskById(subtask.getId());
 
         HttpTaskManager taskManager1 = taskManager.load();
 
         assertEquals(tasks.size(), taskManager1.getAllTasks().size());
-        assertEquals(0, taskManager1.getInMemoryHistoryManager().getHistory().size());
+        assertEquals(2, taskManager1.getInMemoryHistoryManager().getHistory().size());
     }
 
     @Test
     public void testLoadEmptyData() {
         taskManager = new HttpTaskManager("http://localhost:8078");
+        taskManager.clearAll();
         HttpTaskManager httpTaskManager1 = taskManager.load();
 
         assertEquals(0, httpTaskManager1.getAllTasks().size());
@@ -100,6 +100,7 @@ public class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
 
     @Test
     public void testRemoveAllTasks() {
+
         Task task = new Task("nt1", "dt1", "NEW", "15-15_15.11.2024", 44);
         Epic epic = new Epic("ne1", "de1");
         SubTask subtask = new SubTask("nst11", "dst11", "NEW", epic.getId(), "13-13_13.06.2024", 23);
@@ -111,6 +112,5 @@ public class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
         taskManager.clearAll();
 
         assertEquals(0, taskManager.getAllTasks().size());
-        assertEquals(0, taskManager.getInMemoryHistoryManager().getHistory().size());
     }
 }

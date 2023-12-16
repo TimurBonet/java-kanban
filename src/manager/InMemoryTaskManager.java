@@ -221,7 +221,7 @@ public class InMemoryTaskManager implements TaskManager {
         allTasks.addAll(getSubTaskList());
         allTasks.addAll(getEpicList());
         //inMemoryHistoryManager.Collection(allTasks);
-        for (Task t: allTasks){
+        for (Task t : allTasks) {
             inMemoryHistoryManager.add(t);
         }
         return allTasks;

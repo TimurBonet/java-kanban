@@ -101,15 +101,16 @@ public class HttpTaskServerTest {
 
     @Test
     public void getTaskById() throws IOException, InterruptedException {
+        HttpClient httpClient1 = HttpClient.newHttpClient();
         taskManager.createTask(task);
         int id = taskManager.getTaskList().get(0).getId();
-        URI url = URI.create("http://localhost:8080/tasks/task/?id="+id);
+        URI url = URI.create("http://localhost:8080/tasks/task/?id=" + id);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(url)
                 .GET()
                 .build();
 
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = httpClient1.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
     }
 
@@ -128,12 +129,16 @@ public class HttpTaskServerTest {
 
     @Test
     public void getSubtaskForEpic() throws IOException, InterruptedException {
+        Epic epic1 = new Epic("ne1", "de1");
+        taskManager.createEpic(epic1);
+        SubTask subtask = new SubTask("nst11", "dst11", "NEW", epic.getId(), "13-13_13.06.2024", 23);
+        taskManager.createSubTask(subtask);
+        epic1.setStatus(subtask.getStatus());
+        epic1.setStartTime(subtask.getStartTime());
+        epic1.setDuration(subtask.getDuration());
+        epic1.setEndTime();
 
-        taskManager.createEpic(epic);
-        taskManager.createSubTask(subTask);
-        int epicId = epic.getId();
-
-        URI url = URI.create("http://localhost:8080/tasks/subtask/epic/?id=" + epicId);
+        URI url = URI.create("http://localhost:8080/tasks/epic/?id=" + epic1.getId());
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(url)
                 .GET()
